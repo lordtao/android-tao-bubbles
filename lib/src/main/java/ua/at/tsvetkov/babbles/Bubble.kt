@@ -6,26 +6,38 @@ package ua.at.tsvetkov.babbles
 import android.graphics.Path
 import android.view.View
 import android.view.ViewTreeObserver
-import android.widget.Button as AndroidButton // Алиас для избежания конфликта с Compose Button
-import android.widget.TextView
-import androidx.compose.animation.AnimatedVisibility // Импорт для анимации
-import androidx.compose.animation.fadeIn // Импорт для анимации
-import androidx.compose.animation.fadeOut // Импорт для анимации
-import androidx.compose.animation.scaleIn // Импорт для анимации
-import androidx.compose.animation.scaleOut // Импорт для анимации
-import androidx.compose.animation.core.tween // Импорт для настройки продолжительности анимации
-import androidx.compose.animation.EnterTransition // Импорт для отключения анимации
-import androidx.compose.animation.ExitTransition // Импорт для отключения анимации
-import androidx.compose.animation.core.MutableTransitionState // Импорт для управления состоянием анимации
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults // Импортируем CardDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect // Используем этот Rect
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
@@ -36,15 +48,13 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
-import androidx.compose.ui.tooling.preview.Devices // Импорт Devices
-import android.content.res.Configuration // Импорт Configuration
-import androidx.compose.ui.unit.Constraints // Импорт Constraints
-import androidx.compose.foundation.clickable // Импорт clickable
 
 // Enum для позиции стрелки (хвостика)
 enum class ArrowPosition {
@@ -127,7 +137,7 @@ class BubbleShape(
                 path.close()
             }
             ArrowPosition.BOTTOM -> { // Стрелка указывает ВВЕРХ (на верхней стороне пузыря)
-                path.moveTo(arrowOffsetPx + arrowWidthPx / 2, bubbleRectTop) // Правая точка основания стрелки (на верхнем краю тела пузыря)
+                path.moveTo(arrowOffsetPx + arrowWidthPx / 2, bubbleRectTop) // Правая точка основания стрелки (на верхном краю тела пузыря)
                 path.lineTo(arrowOffsetPx - arrowWidthPx / 2, bubbleRectTop) // Левая точка основания стрелки
                 path.lineTo(arrowOffsetPx, 0f) // Кончик стрелки (на верхнем краю общей формы)
                 path.close()
@@ -167,6 +177,7 @@ data class BubbleCommonSettings(
  * Объект данных, содержащий специфичные для каждого экземпляра Bubble данные и поведение.
  */
 data class BubbleData(
+    val key: String, // Добавлено новое поле key
     val targetRect: Rect?,
     val arrowPosition: ArrowPosition,
     val isVisible: Boolean = true,
@@ -181,11 +192,12 @@ data class BubbleData(
  */
 @Composable
 fun Bubble(
-    commonSettings: BubbleCommonSettings,
+    commonSettings: BubbleCommonSettings = BubbleCommonSettings(), // Установлено значение по умолчанию
     bubbleData: BubbleData,
     modifier: Modifier = Modifier
 ) {
     Bubble(
+        key = bubbleData.key, // Передаем key
         targetRect = bubbleData.targetRect,
         arrowPosition = bubbleData.arrowPosition,
         modifier = modifier,
@@ -209,6 +221,7 @@ fun Bubble(
 /**
  * Компонент Bubble с хвостиком, позиционируемый относительно целевого Composable.
  *
+ * @param key Уникальный ключ для идентификации пузыря, используется для анимации.
  * @param targetRect Прямоугольник, представляющий границы целевого элемента в оконных координатах.
  * @param arrowPosition Позиция хвостика Bubble (LEFT, RIGHT, TOP, BOTTOM) относительно целевого элемента.
  * @param modifier Модификатор для Bubble.
@@ -231,6 +244,7 @@ fun Bubble(
  */
 @Composable
 fun Bubble(
+    key: String, // Добавлено новое поле key
     targetRect: Rect?,
     arrowPosition: ArrowPosition,
     modifier: Modifier = Modifier,
@@ -253,7 +267,7 @@ fun Bubble(
     if (targetRect == null) return
 
     // Состояние для управления видимостью пузыря и его анимацией
-    val bubbleTransitionState = remember { MutableTransitionState(false) }
+    val bubbleTransitionState = remember(key) { MutableTransitionState(false) } // Используем key
     bubbleTransitionState.targetState = isVisible // Целевое состояние видимости пузыря
 
     // Scrim (полупрозрачный фон) будет отображаться, пока пузырь виден или анимируется
@@ -283,6 +297,9 @@ fun Bubble(
                 val density = LocalDensity.current
                 val screenWidth = LocalConfiguration.current.screenWidthDp.dp
                 val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+                // Получаем высоту строки состояния
+                val statusBarHeightPx = WindowInsets.statusBars.getTop(density)
 
                 // SubcomposeLayout для измерения и размещения самого пузыря
                 SubcomposeLayout(modifier = Modifier.fillMaxSize()) { constraints ->
@@ -324,7 +341,9 @@ fun Bubble(
 
                     // 4. Получаем центр целевого элемента в оконных координатах
                     val targetCenterX = targetRect.center.x
-                    val targetCenterY = targetRect.center.y
+                    // Корректируем targetCenterY, вычитая высоту строки состояния
+                    val targetCenterYAdjusted = targetRect.center.y - statusBarHeightPx
+
                     val targetWidthPx = targetRect.width
                     val targetHeightPx = targetRect.height
 
@@ -337,10 +356,11 @@ fun Bubble(
                         ArrowPosition.TOP, ArrowPosition.BOTTOM -> targetCenterX - (constrainedBubbleFullWidthPx / 2)
                     }
 
+                    // Используем скорректированный targetCenterYAdjusted для всех вертикальных позиций
                     val desiredBubbleY = when (arrowPosition) {
-                        ArrowPosition.TOP -> targetCenterY - (targetHeightPx / 2) - constrainedBubbleFullHeightPx + arrowTargetOffsetPx
-                        ArrowPosition.BOTTOM -> targetCenterY + (targetHeightPx / 2) + arrowTargetOffsetPx
-                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterY - (constrainedBubbleFullHeightPx / 2)
+                        ArrowPosition.TOP -> targetCenterYAdjusted - (targetHeightPx / 2) - constrainedBubbleFullHeightPx + arrowTargetOffsetPx
+                        ArrowPosition.BOTTOM -> targetCenterYAdjusted + (targetHeightPx / 2) + arrowTargetOffsetPx
+                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterYAdjusted - (constrainedBubbleFullHeightPx / 2)
                     }
 
                     // 6. Ограничиваем позицию Bubble пределами экрана с учетом screenPadding
@@ -353,8 +373,9 @@ fun Bubble(
                     val finalBubbleY = desiredBubbleY.coerceIn(minY, maxY)
 
                     // 7. Вычисляем смещение стрелки от края Bubble (для центрирования на цели)
+                    // Используем targetCenterYAdjusted для расчета смещения стрелки
                     val finalArrowOffsetPx = when (arrowPosition) {
-                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterY - finalBubbleY
+                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterYAdjusted - finalBubbleY
                         ArrowPosition.TOP, ArrowPosition.BOTTOM -> targetCenterX - finalBubbleX
                     }
                     val finalArrowOffsetDp = with(density) { finalArrowOffsetPx.toDp() }
@@ -451,19 +472,6 @@ fun rememberViewRectInWindow(view: View?): State<Rect?> {
     return viewRect
 }
 
-/**
- * Расширение для String, преобразующее шестнадцатеричную строку цвета в Int.
- * Поддерживает форматы "#RRGGBB" и "#AARRGGBB".
- */
-fun String.toColorInt(): Int {
-    val hex = this.removePrefix("#")
-    return when (hex.length) {
-        6 -> "FF$hex".toLong(16).toInt() // Добавляем полный альфа-канал, если он отсутствует
-        8 -> hex.toLong(16).toInt()
-        else -> throw IllegalArgumentException("Неверный формат шестнадцатеричной строки цвета: $this")
-    }
-}
-
 
 @Preview(showBackground = true, device = Devices.PIXEL_4, name = "Bubble Screen Preview")
 @Composable
@@ -478,9 +486,6 @@ fun BubblePreviewScreen() {
     // Состояние для управления видимостью центрального пузыря
     var isCentralBubbleVisible by remember { mutableStateOf(true) }
 
-    // Получаем Density в Composable-контексте
-    val density = LocalDensity.current
-
     // Общие настройки для всех пузырей в этом предварительном просмотре
     val commonSettings = remember {
         BubbleCommonSettings(
@@ -492,8 +497,8 @@ fun BubblePreviewScreen() {
             verticalScreenPadding = DEFAULT_VERTICAL_SCREEN_PADDING,
             scrimColor = DEFAULT_SCRIM_COLOR,
             dismissOnScrimClick = true, // По умолчанию scrim кликабелен для закрытия в этом превью
-            enterAnimationDurationMs = 400, // Увеличена продолжительность анимации появления
-            exitAnimationDurationMs = 400    // Увеличена продолжительность анимации исчезновения
+            enterAnimationDurationMs = 0, // Отключена анимация появления
+            exitAnimationDurationMs = 0    // Отключена анимация исчезновения
         )
     }
 
@@ -518,9 +523,11 @@ fun BubblePreviewScreen() {
         Bubble(
             commonSettings = commonSettings,
             bubbleData = BubbleData(
+                key = "bubble1", // Пример ключа
                 targetRect = targetRectTopLeft,
                 arrowPosition = ArrowPosition.BOTTOM,
-                arrowTargetOffset = 10.dp, // Пример: смещение стрелки на 10dp от цели
+                isVisible = true,
+                onDismissRequest = { /* do nothing for preview */ },
                 content = {
                     Text("Пузырь снизу", color = Color.White, modifier = Modifier.padding(8.dp))
                 }
@@ -547,9 +554,11 @@ fun BubblePreviewScreen() {
         Bubble(
             commonSettings = commonSettings.copy(backgroundColor = Color.Red.copy(alpha = 0.8f)), // Переопределяем цвет фона
             bubbleData = BubbleData(
+                key = "bubble2", // Пример ключа
                 targetRect = targetRectTopRight,
                 arrowPosition = ArrowPosition.LEFT,
-                arrowTargetOffset = -10.dp, // Пример: смещение стрелки на 10dp к цели
+                isVisible = true,
+                onDismissRequest = { /* do nothing for preview */ },
                 content = {
                     Text("Пузырь слева", color = Color.White, modifier = Modifier.padding(8.dp))
                 }
@@ -576,9 +585,11 @@ fun BubblePreviewScreen() {
         Bubble(
             commonSettings = commonSettings.copy(backgroundColor = Color.Green.copy(alpha = 0.8f)),
             bubbleData = BubbleData(
+                key = "bubble3", // Пример ключа
                 targetRect = targetRectBottomLeft,
                 arrowPosition = ArrowPosition.RIGHT,
-                arrowTargetOffset = 5.dp, // Пример: смещение стрелки на 5dp от цели
+                isVisible = true,
+                onDismissRequest = { /* do nothing for preview */ },
                 content = {
                     Text("Пузырь справа", color = Color.White, modifier = Modifier.padding(8.dp))
                 }
@@ -605,9 +616,11 @@ fun BubblePreviewScreen() {
         Bubble(
             commonSettings = commonSettings.copy(backgroundColor = Color.Magenta.copy(alpha = 0.8f)),
             bubbleData = BubbleData(
+                key = "bubble4", // Пример ключа
                 targetRect = targetRectBottomRight,
                 arrowPosition = ArrowPosition.TOP,
-                arrowTargetOffset = -5.dp, // Пример: смещение стрелки на 5dp к цели
+                isVisible = true,
+                onDismissRequest = { /* do nothing for preview */ },
                 content = {
                     Text("Пузырь сверху", color = Color.White, modifier = Modifier.padding(8.dp))
                 }
@@ -633,26 +646,16 @@ fun BubblePreviewScreen() {
         Bubble(
             commonSettings = commonSettings,
             bubbleData = BubbleData(
+                key = "bubbleCenter", // Пример ключа
                 targetRect = targetRectCenter,
                 arrowPosition = ArrowPosition.BOTTOM,
                 isVisible = isCentralBubbleVisible, // Управляем видимостью
                 onDismissRequest = { isCentralBubbleVisible = false }, // Колбэк для скрытия
-                arrowTargetOffset = 15.dp, // Пример: смещение стрелки на 15dp от цели
                 content = {
                     Text("Центральный пузырь", color = Color.White, modifier = Modifier.padding(8.dp))
                 }
             ),
             modifier = Modifier.heightIn(max = 100.dp) // Ограничение высоты
         )
-
-        // Кнопка для скрытия центрального пузыря
-        androidx.compose.material3.Button( // Использовать полный путь для Button, чтобы избежать конфликта с AndroidButton
-            onClick = { isCentralBubbleVisible = !isCentralBubbleVisible }, // Переключаем видимость
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 32.dp)
-        ) {
-            Text(if (isCentralBubbleVisible) "Скрыть центральный пузырь" else "Показать центральный пузырь")
-        }
     }
 }
