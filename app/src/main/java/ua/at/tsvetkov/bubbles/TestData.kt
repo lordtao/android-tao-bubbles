@@ -14,8 +14,6 @@ object TestData {
 
     val testSettings = BubblesSettings(
         scrimColor = Color(0x22002EFF),
-        enterAnimationDurationMs = 0,
-        exitAnimationDurationMs = 0
     )
 
     val testBubbles = listOf(

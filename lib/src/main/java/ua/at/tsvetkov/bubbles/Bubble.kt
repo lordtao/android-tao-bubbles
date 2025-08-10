@@ -429,189 +429,176 @@ fun Bubble(
     }
 }
 
-@Preview(showBackground = true, device = Devices.PIXEL_4, name = "Bubble Screen Preview")
+@Preview(showBackground = true, device = Devices.NEXUS_6, name = "Bubble Screen Preview")
 @Composable
 fun BubblePreviewScreen() {
-    // Состояние для хранения Rect для каждой цели
-    var targetRectTopLeft by remember { mutableStateOf<Rect?>(null) }
+   var targetRectTopLeft by remember { mutableStateOf<Rect?>(null) }
     var targetRectTopRight by remember { mutableStateOf<Rect?>(null) }
     var targetRectBottomLeft by remember { mutableStateOf<Rect?>(null) }
     var targetRectBottomRight by remember { mutableStateOf<Rect?>(null) }
     var targetRectCenter by remember { mutableStateOf<Rect?>(null) }
 
-    // Состояние для управления видимостью центрального пузыря
     var isCentralBubbleVisible by remember { mutableStateOf(true) }
 
-    // Общие настройки для всех пузырей в этом предварительном просмотре
     val commonSettings = remember {
         BubblesSettings(
             arrowWidth = DEFAULT_ARROW_WIDTH,
             arrowHeight = DEFAULT_ARROW_HEIGHT,
             cornerRadius = DEFAULT_CORNER_RADIUS,
-            backgroundColor = DEFAULT_BACKGROUND_COLOR,
+            backgroundColor = DEFAULT_BACKGROUND_COLOR, // This will be overridden per bubble
             horizontalScreenPadding = DEFAULT_HORIZONTAL_SCREEN_PADDING,
             verticalScreenPadding = DEFAULT_VERTICAL_SCREEN_PADDING,
             scrimColor = Color(0x00000000),
-            dismissOnScrimClick = true, // По умолчанию scrim кликабелен для закрытия в этом превью
-            enterAnimationDurationMs = 0, // Отключена анимация появления
-            exitAnimationDurationMs = 0    // Отключена анимация исчезновения
+            dismissOnScrimClick = true, // By default scrim is clickable to close in this preview
+            enterAnimationDurationMs = 0, // Disabled appearance animation
+            exitAnimationDurationMs = 0    // Disappear animation disabled
         )
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.LightGray)
+            .background(Color(0xFFF5F5F5)) // Light Gray background for the whole preview
     ) {
 
-        // Цель 1: Верхний левый угол
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(16.dp)
-                .size(80.dp)
-                .background(Color.Blue)
+                .size(100.dp)
+                .background(Color(0xFF29B6F6))
                 .onGloballyPositioned { coordinates ->
                     targetRectTopLeft = coordinates.boundsInWindow()
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text("ВЛ", color = Color.White)
+            Text("TopStart", color = Color.White)
         }
 
-        // Пузырь для верхнего левого угла (позиция СНИЗУ)
-        Bubble(
-            settings = commonSettings.copy(backgroundColor = Color.Blue.copy(alpha = 0.8f)), // Переопределяем цвет фона
+         Bubble(
+            settings = commonSettings.copy(backgroundColor = Color(0xFF29B6F6).copy(alpha = 0.8f)),
             bubbleData = BubbleData(
-                id = "bubble1",
+                id = "TopStart",
                 arrowPosition = ArrowPosition.BOTTOM,
                 content = {
-                    Text("Пузырь снизу", color = Color.White, modifier = Modifier.padding(8.dp))
+                    Text("Bubble TopStart", color = Color.White, modifier = Modifier.padding(8.dp))
                 }
             ),
             targetComponentRect = targetRectTopLeft,
             isVisible = true,
-            modifier = Modifier.heightIn(max = 100.dp) // Ограничение высоты
+            modifier = Modifier.heightIn(max = 100.dp)
         )
 
-        // Цель 2: Верхний правый угол
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
-                .size(80.dp)
-                .background(Color.Red)
+                .size(100.dp)
+                .background(Color(0xFFFFB74D))
                 .onGloballyPositioned { coordinates ->
                     targetRectTopRight = coordinates.boundsInWindow()
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text("ВП", color = Color.White)
+            Text("TopEnd", color = Color.Black)
         }
 
-        // Пузырь для верхнего правого угла (позиция СЛЕВА)
-        Bubble(
-            settings = commonSettings.copy(backgroundColor = Color.Red.copy(alpha = 0.8f)), // Переопределяем цвет фона
+         Bubble(
+            settings = commonSettings.copy(backgroundColor = Color(0xFFFFB74D).copy(alpha = 0.8f)),
             bubbleData = BubbleData(
-                id = "bubble2",
+                id = "TopEnd",
                 arrowPosition = ArrowPosition.LEFT,
                 content = {
-                    Text("Пузырь слева", color = Color.White, modifier = Modifier.padding(8.dp))
+                    Text("Bubble TopEnd", color = Color.Black, modifier = Modifier.padding(8.dp))
                 }
             ),
             targetComponentRect = targetRectTopRight,
             isVisible = true,
-            modifier = Modifier.heightIn(max = 100.dp) // Ограничение высоты
+            modifier = Modifier.heightIn(max = 100.dp)
         )
 
-        // Цель 3: Нижний левый угол
-        Box(
+         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
-                .size(80.dp)
-                .background(Color.Green)
+                .size(100.dp)
+                .background(Color(0xFFFFA726))
                 .onGloballyPositioned { coordinates ->
                     targetRectBottomLeft = coordinates.boundsInWindow()
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text("НЛ", color = Color.White)
+            Text("BottomStart", color = Color.Black)
         }
 
-        // Пузырь для нижнего левого угла (позиция СПРАВА)
-        Bubble(
-            settings = commonSettings.copy(backgroundColor = Color.Green.copy(alpha = 0.8f)),
+       Bubble(
+            settings = commonSettings.copy(backgroundColor = Color(0xFFFFA726).copy(alpha = 0.8f)),
             bubbleData = BubbleData(
                 id = "bubble3",
                 arrowPosition = ArrowPosition.RIGHT,
                 content = {
-                    Text("Пузырь справа", color = Color.White, modifier = Modifier.padding(8.dp))
+                    Text("Bubble BottomStart", color = Color.Black, modifier = Modifier.padding(8.dp))
                 }
             ),
             targetComponentRect = targetRectBottomLeft,
             isVisible = true,
-            modifier = Modifier.heightIn(max = 100.dp) // Ограничение высоты
+            modifier = Modifier.heightIn(max = 100.dp)
         )
 
-        // Цель 4: Нижний правый угол
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
-                .size(80.dp)
-                .background(Color.Magenta)
+                .size(100.dp)
+                .background(Color(0xFF00ACC1))
                 .onGloballyPositioned { coordinates ->
                     targetRectBottomRight = coordinates.boundsInWindow()
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text("НП", color = Color.White)
+            Text("BottomEnd", color = Color.White)
         }
 
-        // Пузырь для нижнего правого угла (позиция СВЕРХУ)
         Bubble(
-            settings = commonSettings.copy(backgroundColor = Color.Magenta.copy(alpha = 0.8f)),
+            settings = commonSettings.copy(backgroundColor = Color(0xFF00ACC1).copy(alpha = 0.8f)),
             bubbleData = BubbleData(
                 id = "bubble4",
                 arrowPosition = ArrowPosition.TOP,
                 content = {
-                    Text("Пузырь сверху", color = Color.White, modifier = Modifier.padding(8.dp))
+                    Text("Bubble BottomEnd", color = Color.White, modifier = Modifier.padding(8.dp))
                 }
             ),
             targetComponentRect = targetRectBottomRight,
             isVisible = true,
-            modifier = Modifier.heightIn(max = 100.dp) // Ограничение высоты
+            modifier = Modifier.heightIn(max = 100.dp)
         )
 
-        // Цель 5: Центр
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(80.dp)
-                .background(Color.DarkGray)
+                .size(100.dp)
+                .background(Color(0xFF0277BD))
                 .onGloballyPositioned { coordinates ->
                     targetRectCenter = coordinates.boundsInWindow()
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text("ЦЕНТР", color = Color.White)
+            Text("Center", color = Color.White)
         }
 
-        // Пузырь для центральной цели (позиция СНИЗУ, как пример)
         Bubble(
-            settings = commonSettings,
+            settings = commonSettings.copy(backgroundColor = Color(0xFF0277BD).copy(alpha = 0.8f)),
             bubbleData = BubbleData(
                 id = "bubbleCenter",
                 arrowPosition = ArrowPosition.BOTTOM,
                 content = {
-                    Text("Центральный пузырь", color = Color.White, modifier = Modifier.padding(8.dp))
+                    Text("Bubble Center", color = Color.White, modifier = Modifier.padding(8.dp))
                 }
             ),
             targetComponentRect = targetRectCenter,
             onDismissRequest = { isCentralBubbleVisible = false },
             isVisible = isCentralBubbleVisible,
-            modifier = Modifier.heightIn(max = 100.dp) // Ограничение высоты
+            modifier = Modifier.heightIn(max = 100.dp)
         )
     }
 }

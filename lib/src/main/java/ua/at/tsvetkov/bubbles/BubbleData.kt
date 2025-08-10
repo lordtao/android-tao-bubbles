@@ -17,7 +17,7 @@ data class BubbleData(
     val content: @Composable (onActionClick: () -> Unit) -> Unit,
 ) {
 
-    private val key = "BUBBLE_NOT_SHOWED_${id.uppercase()}"
+    private val key = "BUBBLE_NOT_SHOWED_${id.uppercase().replace(Regex("[ .-]"), "_")}"
 
     fun isNotShowed() = AppConfig.getBoolean(key, defValue = true)
 

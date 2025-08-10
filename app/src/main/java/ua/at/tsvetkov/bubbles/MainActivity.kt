@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ua.at.tsvetkov.bubbles.TestData.testBubbles
 import ua.at.tsvetkov.bubbles.TestData.testSettings
@@ -36,12 +35,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize()
-                            .background(Color.Cyan),
+                            .background(Color(0xFFF5F5F5)), // Lightest Gray for outer background
                         contentAlignment = Alignment.Center
                     ) {
-                        Greeting(
-                            name = "Android"
-                        )
+                        BubblesShowExample()
                     }
                 }
             }
@@ -50,12 +47,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun BubblesShowExample() {
 
     val bubblesSettings = remember { testSettings }
-
     val bubblesData = remember { testBubbles }
-
     val bubbleShowController = rememberBubbleShowController(
         settings = bubblesSettings,
         bubbles = bubblesData,
@@ -68,7 +63,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.LightGray)
+            .background(Color(0xFFE0F7FA)) // Soft light blue background
     ) {
 
         // Differently positioned UI components
@@ -78,7 +73,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 .align(Alignment.TopStart)
                 .padding(16.dp)
                 .size(100.dp)
-                .background(Color.Blue)
+                .background(Color(0xFF29B6F6)) // Medium blue
                 // Transferring data about this component to the controller and
                 // associating it with a key from the pre-initialized BubbleData data
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[0]),
@@ -92,11 +87,11 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
                 .size(100.dp)
-                .background(Color.Red)
+                .background(Color(0xFFFFB74D)) // Light orange
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[1]),
             contentAlignment = Alignment.Center
         ) {
-            Text("TopEnd", color = Color.White)
+            Text("TopEnd", color = Color.Black)
         }
 
         Box(
@@ -104,7 +99,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
                 .size(100.dp)
-                .background(Color.Green)
+                .background(Color(0xFFFFA726)) // Slightly darker orange
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[2]),
             contentAlignment = Alignment.Center
         ) {
@@ -116,18 +111,18 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
                 .size(100.dp)
-                .background(Color.Magenta)
+                .background(Color(0xFF00ACC1)) // Teal/Cyan
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[3]),
             contentAlignment = Alignment.Center
         ) {
-            Text("BottomEnd", color = Color.Black)
+            Text("BottomEnd", color = Color.White)
         }
 
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(100.dp)
-                .background(Color.DarkGray)
+                .background(Color(0xFF0277BD)) // Darker blue
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[4]),
             contentAlignment = Alignment.Center
         ) {
@@ -167,24 +162,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 //            )
 //        }
 
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .background(Color.Cyan),
-            contentAlignment = Alignment.Center
-        ) {
-            Greeting(
-                name = "Android"
-            )
-        }
     }
 }
 
