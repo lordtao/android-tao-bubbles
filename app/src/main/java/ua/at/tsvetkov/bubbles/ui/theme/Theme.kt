@@ -1,6 +1,5 @@
-package ua.at.tsvetkov.myapplication.ui.theme
+package ua.at.tsvetkov.bubbles.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

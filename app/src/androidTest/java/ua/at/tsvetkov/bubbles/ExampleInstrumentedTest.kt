@@ -1,4 +1,4 @@
-package ua.at.tsvetkov.myapplication
+package ua.at.tsvetkov.bubbles
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

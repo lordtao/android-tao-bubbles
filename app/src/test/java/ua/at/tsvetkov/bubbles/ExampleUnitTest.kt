@@ -1,4 +1,4 @@
-package ua.at.tsvetkov.babbles
+package ua.at.tsvetkov.bubbles
 
 import org.junit.Test
 
