@@ -183,6 +183,7 @@ fun Bubble(
         scrimColor = controller.settings.scrimColor,
         dismissOnScrimClick = controller.settings.dismissOnScrimClick,
         onDismissRequest = { controller.showNext() },
+        onStopShowRequest = { controller.stopShow() }, // Added
         arrowTargetOffset = controller.settings.arrowTargetOffset,
         enterAnimationDurationMs = controller.settings.enterAnimationDurationMs,
         exitAnimationDurationMs = controller.settings.exitAnimationDurationMs,
@@ -202,6 +203,7 @@ fun Bubble(
     bubbleData: BubbleData,
     targetComponentRect: Rect?,
     onDismissRequest: () -> Unit = {},
+    onStopShowRequest: () -> Unit = {}, // Added
     isVisible: Boolean = true,
 ) {
     Bubble(
@@ -220,6 +222,7 @@ fun Bubble(
         scrimColor = settings.scrimColor,
         dismissOnScrimClick = settings.dismissOnScrimClick,
         onDismissRequest = onDismissRequest,
+        onStopShowRequest = onStopShowRequest, // Passed down
         arrowTargetOffset = settings.arrowTargetOffset,
         enterAnimationDurationMs = settings.enterAnimationDurationMs,
         exitAnimationDurationMs = settings.exitAnimationDurationMs,
@@ -246,6 +249,7 @@ fun Bubble(
  * @param scrimColor Цвет полупрозрачного фона под пузырем (включает прозрачность).
  * @param dismissOnScrimClick Если true, нажатие на полупрозрачный фон скроет пузырь.
  * @param onDismissRequest Колбэк, вызываемый при запросе на скрытие пузыря.
+ * @param onStopShowRequest Колбэк, вызываемый для полной остановки показа бабблов.
  * @param arrowTargetOffset Смещение стрелки относительно центра целевого компонента.
  * Положительное значение смещает стрелку от целевого компонента,
  * отрицательное - к нему.
@@ -271,11 +275,12 @@ fun Bubble(
     scrimColor: Color = DEFAULT_SCRIM_COLOR,
     dismissOnScrimClick: Boolean = false,
     onDismissRequest: () -> Unit = {},
+    onStopShowRequest: () -> Unit = {},
     arrowTargetOffset: Dp = 0.dp,
     enterAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS,
     exitAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS,
     isVisible: Boolean = true,
-    content: @Composable (onActionClick: () -> Unit) -> Unit,
+    content: @Composable (onActionClick: () -> Unit, onStopShowRequest: () -> Unit) -> Unit, // Modified signature
 ) {
     if (targetComponentRect == null) return
 
@@ -290,7 +295,7 @@ fun Bubble(
                 .fillMaxSize()
                 .background(scrimColor)
                 .clickable(enabled = dismissOnScrimClick) {
-                    onDismissRequest()
+                    onDismissRequest() // This dismisses the current bubble or triggers showNext via controller
                 }
         ) {
             AnimatedVisibility(
@@ -319,7 +324,7 @@ fun Bubble(
                     val verticalContentPaddingPx =
                         with(density) { cornerRadius.toPx() * 2 + if (arrowPosition == ArrowPosition.TOP || arrowPosition == ArrowPosition.BOTTOM) arrowHeight.toPx() else 0f }
 
-                    val contentMeasurable = subcompose("bubbleContent") { content(onDismissRequest) }.first()
+                    val contentMeasurable = subcompose("bubbleContent") { content(onDismissRequest, onStopShowRequest) }.first() // Modified call
                     val contentPlaceable = contentMeasurable.measure(
                         Constraints(
                             minWidth = 0,
@@ -549,7 +554,7 @@ fun Bubble(
                                         }
                                     )
                             ) {
-                                content(onDismissRequest)
+                                content(onDismissRequest, onStopShowRequest) // Modified call
                             }
                         }
                     }.first().measure(
@@ -627,13 +632,16 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "TopStart",
                 arrowPosition = ArrowPosition.BOTTOM,
-                content = {
-                    Text("Bubble TopStart", color = Color.White, modifier = Modifier.padding(8.dp))
+                content = { onActionClick, onStopShowRequest ->
+                    Text("Bubble TopStart", color = Color.White, modifier = Modifier
+                        .padding(8.dp)
+                        .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectTopLeft,
             isVisible = true,
             modifier = Modifier.heightIn(max = 100.dp)
+            // onStopShowRequestCallback will use its default {} for previews if not explicitly passed
         )
 
         Box(
@@ -659,8 +667,10 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "TopEnd",
                 arrowPosition = ArrowPosition.LEFT,
-                content = {
-                    Text("Bubble TopEnd", color = Color.Black, modifier = Modifier.padding(8.dp))
+                content = { onActionClick, onStopShowRequest ->
+                    Text("Bubble TopEnd", color = Color.Black, modifier = Modifier
+                        .padding(8.dp)
+                        .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectTopRight,
@@ -691,8 +701,10 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "bubble3",
                 arrowPosition = ArrowPosition.RIGHT,
-                content = {
-                    Text("Bubble BottomStart", color = Color.Black, modifier = Modifier.padding(8.dp))
+                content = { onActionClick, onStopShowRequest ->
+                    Text("Bubble BottomStart", color = Color.Black, modifier = Modifier
+                        .padding(8.dp)
+                        .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectBottomLeft,
@@ -723,8 +735,10 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "bubble4",
                 arrowPosition = ArrowPosition.TOP,
-                content = {
-                    Text("Bubble BottomEnd", color = Color.White, modifier = Modifier.padding(8.dp))
+                content = { onActionClick, onStopShowRequest ->
+                    Text("Bubble BottomEnd", color = Color.White, modifier = Modifier
+                        .padding(8.dp)
+                        .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectBottomRight,
@@ -748,14 +762,16 @@ fun BubblePreviewScreen() {
         Bubble(
             settings = commonSettings.copy(
                 backgroundColor = Color(0xFF0277BD).copy(alpha = 0.8f),
-                bubbleBorderColor = Color(0xFF025C91),
-                bubbleBorderWidth = 2.dp
+                bubbleBorderColor = Color(0xFF025C91), // Example of border
+                bubbleBorderWidth = 2.dp      // Example of border
             ),
             bubbleData = BubbleData(
                 id = "bubbleCenter",
                 arrowPosition = ArrowPosition.BOTTOM,
-                content = {
-                    Text("Bubble Center with Red Border", color = Color.White, modifier = Modifier.padding(8.dp))
+                content = { onActionClick, onStopShowRequest -> // Already correct in preview
+                    Text("Bubble Center with Red Border", color = Color.White, modifier = Modifier
+                        .padding(8.dp)
+                        .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectCenter,

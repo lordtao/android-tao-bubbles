@@ -158,6 +158,10 @@ fun BubblesShowExample() {
 //                    // Show next bubble or/and add something else
 //                    bubbleShowController.showNext()
 //                },
+//                onStopShowRequest = {
+//                    // Stop showing bubbles
+//                    bubbleShowController.stopShow()
+//                },
 //                targetComponentRect = bubbleShowController.currentTargetRect,
 //            )
 //        }

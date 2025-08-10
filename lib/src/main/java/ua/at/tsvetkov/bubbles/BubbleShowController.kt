@@ -64,7 +64,7 @@ class BubbleShowController(
      */
     val currentTargetRect: Rect?
         get() = currentBubbleData?.let { targetRectsMap[it.id] }
-    
+
     init {
         val firstBubbleIdForShow = bubbles.indexOfFirst {
             it.isNotShowed()
