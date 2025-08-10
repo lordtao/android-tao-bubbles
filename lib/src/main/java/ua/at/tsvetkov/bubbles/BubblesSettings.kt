@@ -17,6 +17,8 @@ data class BubblesSettings(
     val cornerRadius: Dp = DEFAULT_CORNER_RADIUS,
     val arrowTargetOffset: Dp = 0.dp,
     val backgroundColor: Color = DEFAULT_BACKGROUND_COLOR,
+    val bubbleBorderColor: Color = DEFAULT_BORDER_COLOR, // Added border color
+    val bubbleBorderWidth: Dp = DEFAULT_BORDER_WIDTH,   // Added border width
     val horizontalScreenPadding: Dp = DEFAULT_HORIZONTAL_SCREEN_PADDING,
     val verticalScreenPadding: Dp = DEFAULT_VERTICAL_SCREEN_PADDING,
     val scrimColor: Color = DEFAULT_SCRIM_COLOR,
@@ -29,6 +31,8 @@ data class BubblesSettings(
         val DEFAULT_ARROW_HEIGHT = 10.dp
         val DEFAULT_CORNER_RADIUS = 8.dp
         val DEFAULT_BACKGROUND_COLOR = Color(0xFF424242)
+        val DEFAULT_BORDER_COLOR = Color.Transparent // Default border color (transparent)
+        val DEFAULT_BORDER_WIDTH = 0.dp            // Default border width (no border)
         val DEFAULT_HORIZONTAL_SCREEN_PADDING = 16.dp
         val DEFAULT_VERTICAL_SCREEN_PADDING = 16.dp
         val DEFAULT_SCRIM_COLOR = Color(0x33000000)

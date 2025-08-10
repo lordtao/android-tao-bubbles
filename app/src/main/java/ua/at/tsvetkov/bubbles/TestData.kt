@@ -14,6 +14,9 @@ object TestData {
 
     val testSettings = BubblesSettings(
         scrimColor = Color(0x22002EFF),
+        backgroundColor = Color(0xFFFFDAB7),
+        bubbleBorderColor = Color.Black,
+        bubbleBorderWidth = 2.dp
     )
 
     val testBubbles = listOf(
@@ -22,7 +25,7 @@ object TestData {
             arrowPosition = ArrowPosition.BOTTOM,
             content = { onActionClick ->
                 Text(
-                    "bubble bottom", color = Color.White, modifier = Modifier
+                    "bubble bottom", color = Color.Black, modifier = Modifier
                         .padding(8.dp)
                         .clickable { onActionClick() })
             }
@@ -32,7 +35,7 @@ object TestData {
             arrowPosition = ArrowPosition.LEFT,
             content = { onActionClick ->
                 Text(
-                    "bubble left", color = Color.White, modifier = Modifier
+                    "bubble left", color = Color.Black, modifier = Modifier
                         .padding(8.dp)
                         .clickable { onActionClick() })
             }
@@ -42,7 +45,7 @@ object TestData {
             arrowPosition = ArrowPosition.RIGHT,
             content = { onActionClick ->
                 Text(
-                    "bubble right", color = Color.White, modifier = Modifier
+                    "bubble right", color = Color.Black, modifier = Modifier
                         .padding(8.dp)
                         .clickable { onActionClick() })
             }
@@ -52,7 +55,7 @@ object TestData {
             arrowPosition = ArrowPosition.TOP,
             content = { onActionClick ->
                 Text(
-                    "bubble top", color = Color.White, modifier = Modifier
+                    "bubble top", color = Color.Black, modifier = Modifier
                         .padding(8.dp)
                         .clickable { onActionClick() })
             }
@@ -61,7 +64,7 @@ object TestData {
             id = "bubble_center",
             content = { onActionClick ->
                 Text(
-                    "bubble center", color = Color.White, modifier = Modifier
+                    "bubble center", color = Color.Black, modifier = Modifier
                         .padding(8.dp)
                         .clickable { onActionClick() }
                 )
