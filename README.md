@@ -15,7 +15,7 @@ This is useful for tutorials, feature highlights, or contextual help.
 *   **Declarative API**: Built with Jetpack Compose for a modern Android UI, offering a simple and intuitive API.
 *   **Easy to use**: No complicated constructions. Adding to an existing project is very simple.
 
-[Download the latest release and demo](https://github.com/lordtao/android-tao-bubble/releases)
+[Download the latest release and demo](https://github.com/lordtao/android-tao-bubbles/releases)
 
 [Licence](https://opensource.org/license/mit)
 
