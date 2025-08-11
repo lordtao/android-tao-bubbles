@@ -1,6 +1,7 @@
 package ua.at.tsvetkov.bubbles
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -22,7 +23,6 @@ import ua.at.tsvetkov.bubbles.TestData.testBubbles
 import ua.at.tsvetkov.bubbles.TestData.testSettings
 import ua.at.tsvetkov.bubbles.ui.theme.MyApplicationTheme
 import ua.at.tsvetkov.bubbles.ui.theme.Purple40
-import ua.at.tsvetkov.util.logger.Log
 
 class MainActivity : ComponentActivity() {
 
@@ -57,7 +57,7 @@ fun BubblesShowExample() {
         bubbles = bubblesData,
         onFinished = {
             // Actions to perform after all bubbles are completed
-            Log.d("All bubbles completed")
+            Log.d("BubblesShowExample", "All bubbles completed")
         }
     )
 

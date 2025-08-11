@@ -40,9 +40,7 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":lib"))
 
-    debugImplementation(mapOf("name" to "taolog-debug", "ext" to "aar"))
     debugImplementation(mapOf("name" to "taocore-debug", "ext" to "aar"))
-    releaseImplementation(mapOf("name" to "taolog", "ext" to "aar"))
     releaseImplementation(mapOf("name" to "taocore", "ext" to "aar"))
 
 
