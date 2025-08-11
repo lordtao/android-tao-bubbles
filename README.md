@@ -1,5 +1,4 @@
-# TAO Bubbles
-## for Jetpack Compose
+# TAO Bubbles (for Jetpack Compose)
 =====================
 
 A lightweight Jetpack Compose library for displaying customizable "bubbles", "showcases" or "tooltips" that can point to specific UI elements. 
@@ -23,8 +22,6 @@ This is useful for tutorials, feature highlights, or contextual help.
 ![Preview](media/Preview.png)
 
 <img src="media/Demo.gif" alt="drawing" width="420"/>
-
-###  `Bubble`
 
 **Example Usage (Single Bubble):**
 
