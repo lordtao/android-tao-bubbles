@@ -20,7 +20,7 @@ This is useful for tutorials, feature highlights, or contextual help.
 
 ![Preview](media/Preview.png)
 
-![Video of BubbleDemo](media/screen_recording.webm)
+![Video of BubbleDemo](media/Demo.mp4)
 
 ###  `Bubble`
 
