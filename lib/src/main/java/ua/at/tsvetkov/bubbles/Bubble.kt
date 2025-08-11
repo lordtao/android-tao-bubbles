@@ -320,37 +320,77 @@ fun Bubble(
 
                 // SubcomposeLayout for measuring and positioning the bubble itself
                 SubcomposeLayout(modifier = Modifier.fillMaxSize()) { constraints ->
-                    // 1. Measure the Bubble content to determine its dimensions
-                    val horizontalContentPaddingPx =
-                        with(density) { cornerRadius.toPx() * 2 + if (arrowPosition == ArrowPosition.LEFT || arrowPosition == ArrowPosition.RIGHT) arrowHeight.toPx() else 0f }
-                    val verticalContentPaddingPx =
-                        with(density) { cornerRadius.toPx() * 2 + if (arrowPosition == ArrowPosition.TOP || arrowPosition == ArrowPosition.BOTTOM) arrowHeight.toPx() else 0f }
+                    // density, windowInfo, screenWidth (Dp), screenHeight (Dp) уже определены
+                    // statusBarHeightPx, navigationBarsHeightPx определены
 
-                    val contentMeasurable = subcompose("bubbleContent") { content(onDismissRequest, onStopShowRequest) }.first() // Modified call
+                    val cornerRadiusPx = with(density) { cornerRadius.toPx() }
+                    val arrowLengthPx = with(density) { arrowHeight.toPx() } // Dp значение arrowHeight используется как длина стрелки
+
+                    // Максимально доступная область для пузыря на экране, после учета экранных отступов
+                    val hScreenPaddingPx = with(density) { horizontalScreenPadding.toPx() }
+                    val vScreenPaddingPx = with(density) { verticalScreenPadding.toPx() }
+
+                    // constraints.maxWidth это фактически ширина устройства, constraints.maxHeight - высота устройства
+                    val maxBubbleAreaOnScreenWidthPx = constraints.maxWidth - 2 * hScreenPaddingPx
+                    val maxBubbleAreaOnScreenHeightPx = constraints.maxHeight - 2 * vScreenPaddingPx
+
+                    // Максимальная ширина, которую может занять *весь пузырь*, учитывая целевой компонент для LEFT/RIGHT
+                    val finalMaxBubbleFullWidthPx = if (arrowPosition == ArrowPosition.LEFT || arrowPosition == ArrowPosition.RIGHT) {
+                        (maxBubbleAreaOnScreenWidthPx - targetComponentRect.width).coerceAtLeast(0f)
+                    } else {
+                        maxBubbleAreaOnScreenWidthPx
+                    }
+                    // Максимальная высота, которую может занять *весь пузырь*
+                    val finalMaxBubbleFullHeightPx = maxBubbleAreaOnScreenHeightPx
+
+
+                    // Определяем внутренние отступы в границах пузыря, занимаемые не-контентными элементами (углы, тело стрелки)
+                    // Это используется для определения пространства для самого контента.
+                    val horizontalPaddingInsideBubbleForContentCalc = when (arrowPosition) {
+                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> 2 * cornerRadiusPx + arrowLengthPx
+                        else -> 2 * cornerRadiusPx // Стрелка сверху/снизу вертикальна, не занимает горизонтальное пространство у тела
+                    }
+                    val verticalPaddingInsideBubbleForContentCalc = when (arrowPosition) {
+                        ArrowPosition.TOP, ArrowPosition.BOTTOM -> 2 * cornerRadiusPx + arrowLengthPx
+                        else -> 2 * cornerRadiusPx // Стрелка слева/справа горизонтальна
+                    }
+
+                    // Максимальные размеры для самого контента
+                    val contentMeasureMaxWidthPx = (finalMaxBubbleFullWidthPx - horizontalPaddingInsideBubbleForContentCalc).coerceAtLeast(0f)
+                    val contentMeasureMaxHeightPx = (finalMaxBubbleFullHeightPx - verticalPaddingInsideBubbleForContentCalc).coerceAtLeast(0f)
+
+                    val contentMeasurable = subcompose("bubbleContent") { content(onDismissRequest, onStopShowRequest) }.first()
                     val contentPlaceable = contentMeasurable.measure(
                         Constraints(
                             minWidth = 0,
                             minHeight = 0,
-                            maxWidth = (constraints.maxWidth - horizontalContentPaddingPx).roundToInt().coerceAtLeast(0),
-                            maxHeight = (constraints.maxHeight - verticalContentPaddingPx).roundToInt().coerceAtLeast(0)
+                            maxWidth = contentMeasureMaxWidthPx.roundToInt(),
+                            maxHeight = contentMeasureMaxHeightPx.roundToInt()
                         )
                     )
 
                     val measuredContentWidthPx = contentPlaceable.width.toFloat()
                     val measuredContentHeightPx = contentPlaceable.height.toFloat()
 
-                    val bubbleBodyWidthPx = (measuredContentWidthPx + with(density) { cornerRadius.toPx() * 2 })
-                    val bubbleBodyHeightPx = (measuredContentHeightPx + with(density) { cornerRadius.toPx() * 2 })
+                    // Фактический размер тела пузыря (контент + 2*радиус скругления)
+                    val bubbleBodyWidthPx = measuredContentWidthPx + 2 * cornerRadiusPx
+                    val bubbleBodyHeightPx = measuredContentHeightPx + 2 * cornerRadiusPx
 
-                    val constrainedBubbleFullWidthPx = (bubbleBodyWidthPx + when (arrowPosition) {
-                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> with(density) { arrowHeight.toPx() }
-                        else -> 0f
-                    }).coerceAtMost(with(density) { screenWidth.toPx() - horizontalScreenPadding.toPx() * 2 })
+                    // Рассчитываем финальные размеры пузыря, убеждаясь, что они не превышают вычисленные максимумы
+                    val actualBubbleFullWidthPx = (when (arrowPosition) {
+                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> bubbleBodyWidthPx + arrowLengthPx
+                        else -> bubbleBodyWidthPx // Для TOP/BOTTOM, длина стрелки вертикальна
+                    }).coerceAtMost(finalMaxBubbleFullWidthPx)
 
-                    val constrainedBubbleFullHeightPx = (bubbleBodyHeightPx + when (arrowPosition) {
-                        ArrowPosition.TOP, ArrowPosition.BOTTOM -> with(density) { arrowHeight.toPx() }
-                        else -> 0f
-                    }).coerceAtMost(with(density) { screenHeight.toPx() - verticalScreenPadding.toPx() * 2 })
+                    val actualBubbleFullHeightPx = (when (arrowPosition) {
+                        ArrowPosition.TOP, ArrowPosition.BOTTOM -> bubbleBodyHeightPx + arrowLengthPx
+                        else -> bubbleBodyHeightPx // Для LEFT/RIGHT, длина стрелки горизонтальна
+                    }).coerceAtMost(finalMaxBubbleFullHeightPx)
+
+                    // Сохраняем старые имена переменных для совместимости с остальным кодом,
+                    // если они используются для создания Dp версий.
+                    val constrainedBubbleFullWidthPx = actualBubbleFullWidthPx
+                    val constrainedBubbleFullHeightPx = actualBubbleFullHeightPx
 
                     val bubbleFullWidthDp = with(density) { constrainedBubbleFullWidthPx.toDp() }
                     val bubbleFullHeightDp = with(density) { constrainedBubbleFullHeightPx.toDp() }
