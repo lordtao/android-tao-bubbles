@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -315,6 +316,7 @@ fun Bubble(
                 val screenHeight = with(density) { windowInfo.containerSize.height.toDp() }
 
                 val statusBarHeightPx = WindowInsets.statusBars.getTop(density)
+                val navigationBarsHeightPx = WindowInsets.navigationBars.getBottom(density)
 
                 // SubcomposeLayout for measuring and positioning the bubble itself
                 SubcomposeLayout(modifier = Modifier.fillMaxSize()) { constraints ->
@@ -373,12 +375,12 @@ fun Bubble(
                         ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterYAdjusted - (constrainedBubbleFullHeightPx / 2)
                     }
 
-                    val minX = with(density) { horizontalScreenPadding.toPx() }
-                    val maxX = with(density) { screenWidth.toPx() } - constrainedBubbleFullWidthPx - minX
+                    val minX = with(density) { horizontalScreenPadding.toPx() } //+ shiftLeftX
+                    val maxX = with(density) { screenWidth.toPx() } - constrainedBubbleFullWidthPx - minX// - shiftRightX
                     val finalBubbleX = desiredBubbleX.coerceIn(minX, maxX)
 
                     val minY = with(density) { verticalScreenPadding.toPx() }
-                    val maxY = with(density) { screenHeight.toPx() } - constrainedBubbleFullHeightPx - minY
+                    val maxY = with(density) { screenHeight.toPx() } - constrainedBubbleFullHeightPx - navigationBarsHeightPx - statusBarHeightPx - minY
                     val finalBubbleY = desiredBubbleY.coerceIn(minY, maxY)
 
                     val finalArrowOffsetPx = when (arrowPosition) {
@@ -633,9 +635,10 @@ fun BubblePreviewScreen() {
                 id = "TopStart",
                 arrowPosition = ArrowPosition.BOTTOM,
                 content = { onActionClick, onStopShowRequest ->
-                    Text("Bubble TopStart", color = Color.White, modifier = Modifier
-                        .padding(8.dp)
-                        .clickable { onActionClick() })
+                    Text(
+                        "Bubble TopStart", color = Color.White, modifier = Modifier
+                            .padding(8.dp)
+                            .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectTopLeft,
@@ -668,9 +671,10 @@ fun BubblePreviewScreen() {
                 id = "TopEnd",
                 arrowPosition = ArrowPosition.LEFT,
                 content = { onActionClick, onStopShowRequest ->
-                    Text("Bubble TopEnd", color = Color.Black, modifier = Modifier
-                        .padding(8.dp)
-                        .clickable { onActionClick() })
+                    Text(
+                        "Bubble TopEnd", color = Color.Black, modifier = Modifier
+                            .padding(8.dp)
+                            .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectTopRight,
@@ -702,9 +706,10 @@ fun BubblePreviewScreen() {
                 id = "bubble3",
                 arrowPosition = ArrowPosition.RIGHT,
                 content = { onActionClick, onStopShowRequest ->
-                    Text("Bubble BottomStart", color = Color.Black, modifier = Modifier
-                        .padding(8.dp)
-                        .clickable { onActionClick() })
+                    Text(
+                        "Bubble BottomStart", color = Color.Black, modifier = Modifier
+                            .padding(8.dp)
+                            .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectBottomLeft,
@@ -736,9 +741,10 @@ fun BubblePreviewScreen() {
                 id = "bubble4",
                 arrowPosition = ArrowPosition.TOP,
                 content = { onActionClick, onStopShowRequest ->
-                    Text("Bubble BottomEnd", color = Color.White, modifier = Modifier
-                        .padding(8.dp)
-                        .clickable { onActionClick() })
+                    Text(
+                        "Bubble BottomEnd", color = Color.White, modifier = Modifier
+                            .padding(8.dp)
+                            .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectBottomRight,
@@ -769,9 +775,10 @@ fun BubblePreviewScreen() {
                 id = "bubbleCenter",
                 arrowPosition = ArrowPosition.BOTTOM,
                 content = { onActionClick, onStopShowRequest -> // Already correct in preview
-                    Text("Bubble Center with Red Border", color = Color.White, modifier = Modifier
-                        .padding(8.dp)
-                        .clickable { onActionClick() })
+                    Text(
+                        "Bubble Center with Red Border", color = Color.White, modifier = Modifier
+                            .padding(8.dp)
+                            .clickable { onActionClick() })
                 }
             ),
             targetComponentRect = targetRectCenter,

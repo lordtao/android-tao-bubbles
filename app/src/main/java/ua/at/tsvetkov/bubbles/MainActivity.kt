@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import ua.at.tsvetkov.bubbles.TestData.testBubbles
 import ua.at.tsvetkov.bubbles.TestData.testSettings
 import ua.at.tsvetkov.bubbles.ui.theme.MyApplicationTheme
+import ua.at.tsvetkov.bubbles.ui.theme.Purple40
 import ua.at.tsvetkov.util.logger.Log
 
 class MainActivity : ComponentActivity() {
@@ -63,7 +64,7 @@ fun BubblesShowExample() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE0F7FA)) // Soft light blue background
+            .background(Color(0xFFE0F7FA))
     ) {
 
         // Differently positioned UI components
@@ -73,7 +74,7 @@ fun BubblesShowExample() {
                 .align(Alignment.TopStart)
                 .padding(16.dp)
                 .size(100.dp)
-                .background(Color(0xFF29B6F6)) // Medium blue
+                .background(Color(0xFF29B6F6))
                 // Transferring data about this component to the controller and
                 // associating it with a key from the pre-initialized BubbleData data
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[0]),
@@ -87,11 +88,11 @@ fun BubblesShowExample() {
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
                 .size(100.dp)
-                .background(Color(0xFFFFB74D)) // Light orange
+                .background(Color(0xFFFFB74D))
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[1]),
             contentAlignment = Alignment.Center
         ) {
-            Text("TopEnd", color = Color.Black)
+            Text("TopEnd", color = Purple40)
         }
 
         Box(
@@ -99,11 +100,11 @@ fun BubblesShowExample() {
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
                 .size(100.dp)
-                .background(Color(0xFFFFA726)) // Slightly darker orange
+                .background(Color(0xFFFFA726))
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[2]),
             contentAlignment = Alignment.Center
         ) {
-            Text("BottomStart", color = Color.Black)
+            Text("BottomStart", color = Purple40)
         }
 
         Box(
@@ -111,7 +112,7 @@ fun BubblesShowExample() {
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
                 .size(100.dp)
-                .background(Color(0xFF00ACC1)) // Teal/Cyan
+                .background(Color(0xFF00ACC1))
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[3]),
             contentAlignment = Alignment.Center
         ) {
@@ -122,7 +123,7 @@ fun BubblesShowExample() {
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(100.dp)
-                .background(Color(0xFF0277BD)) // Darker blue
+                .background(Color(0xFF0277BD))
                 .assignBubble(controller = bubbleShowController, bubbleData = bubblesData[4]),
             contentAlignment = Alignment.Center
         ) {

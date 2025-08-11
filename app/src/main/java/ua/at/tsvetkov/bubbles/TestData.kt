@@ -6,14 +6,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import ua.at.tsvetkov.bubbles.ui.theme.OrangeVeryLight
+import ua.at.tsvetkov.bubbles.ui.theme.Purple40
 
 /**
  * Created by Alexandr Tsvetkov on 10.08.2025.
@@ -22,57 +24,59 @@ object TestData {
 
     val testSettings = BubblesSettings(
         scrimColor = Color(0x22002EFF),
-        backgroundColor = Color(0xFFFFDAB7),
+        backgroundColor = OrangeVeryLight,
         bubbleBorderColor = Color.Black,
         bubbleBorderWidth = 2.dp
     )
 
     val testBubbles = listOf(
         BubbleData(
-            id = "bubble_bottom",
+            id = "Bubble 1",
             arrowPosition = ArrowPosition.BOTTOM,
             content = { onActionClick, onStopShowRequest ->
-                MyContent(onStopShowRequest, onActionClick)
+                MyContent("Bubble 1", onStopShowRequest, onActionClick)
             }
         ),
         BubbleData(
-            id = "bubble_left",
+            id = "Bubble 2",
             arrowPosition = ArrowPosition.LEFT,
             content = { onActionClick, onStopShowRequest ->
-                MyContent(onStopShowRequest, onActionClick)
+                MyContent("Bubble 2", onStopShowRequest, onActionClick)
             }
         ),
         BubbleData(
-            id = "bubble_right",
+            id = "Bubble 3",
             arrowPosition = ArrowPosition.RIGHT,
             content = { onActionClick, onStopShowRequest ->
-                MyContent(onStopShowRequest, onActionClick)
+                MyContent("Bubble 3", onStopShowRequest, onActionClick)
             }
         ),
         BubbleData(
-            id = "bubble_top",
+            id = "Bubble 4",
             arrowPosition = ArrowPosition.TOP,
             content = { onActionClick, onStopShowRequest ->
-                MyContent(onStopShowRequest, onActionClick)
+                MyContent("Bubble 4", onStopShowRequest, onActionClick)
             }
         ),
         BubbleData(
-            id = "bubble_center",
+            id = "Bubble 5",
             content = { onActionClick, onStopShowRequest ->
-                MyContent(onStopShowRequest, onActionClick)
+                MyContent("Bubble 5", onStopShowRequest, onActionClick)
             }
         ),
     )
 
     @Composable
-    private fun MyContent(onStopShowRequest: () -> Unit, onActionClick: () -> Unit) {
+    private fun MyContent(title: String, onStopShowRequest: () -> Unit, onActionClick: () -> Unit) {
         Column(
             modifier = Modifier
                 .padding(8.dp)
-                .width(200.dp),
+                .fillMaxWidth(),
         ) {
-            Text("Example of bubble help. You can insert your Composable object instead.", color = Color.Black)
-            Spacer(modifier = Modifier.height(8.dp)) // <<< Добавлен Spacer
+            Text(title, color = Purple40, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Example of bubble help. You can insert your Composable object instead. This is just an example. Text can be multiline.", color = Color.Black)
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
