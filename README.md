@@ -20,7 +20,8 @@ This is useful for tutorials, feature highlights, or contextual help.
 
 ![Preview](media/Preview.png)
 
-![Video of BubbleDemo](media/Demo.mp4)
+![Video of BubbleDemo](media/Demo.gif =250x)
+<img src="media/Demo.gif" alt="drawing" width="420"/>
 
 ###  `Bubble`
 
