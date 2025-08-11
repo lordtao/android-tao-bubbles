@@ -135,19 +135,14 @@ fun BubblesShowExample() {
                 .align(Alignment.Center)
                 .padding(top = 224.dp),
             onClick = {
-                bubbleShowController.resetShow()
+                bubbleShowController.restartShow()
             }) {
-            Text("Reset Show", color = Color.White)
+            Text("Restart Show", color = Color.White)
         }
 
-        // Initializing and showing bubbles
+        // Start showing the bubbles show
 
-        bubbleShowController.ShowBubble { bubblesData ->
-            Bubble(
-                bubbleData = bubblesData,
-                controller = bubbleShowController
-            )
-        }
+        bubbleShowController.ShowBubbles()
 
         // Another production of the show
 

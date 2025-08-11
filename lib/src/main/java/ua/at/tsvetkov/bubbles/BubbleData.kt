@@ -14,7 +14,7 @@ import ua.at.tsvetkov.application.AppConfig.SAVE
 data class BubbleData(
     val id: String,
     val arrowPosition: ArrowPosition = ArrowPosition.BOTTOM,
-    val content: @Composable (onActionClick: () -> Unit, onStopShowRequest: () -> Unit) -> Unit,
+    val content: @Composable (onDismissClick: () -> Unit, onStopShowRequest: () -> Unit) -> Unit,
 ) {
 
     private val key = "BUBBLE_NOT_SHOWED_${id.uppercase().replace(Regex("[ .-]"), "_")}"

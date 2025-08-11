@@ -69,7 +69,17 @@ import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Path as ComposePath
 
 /**
- * Пользовательская форма для пузыря с хвостиком
+ * A [Shape] implementation for drawing a bubble with an arrow.
+ * The shape consists of a rectangular body with rounded corners and a triangular arrow
+ * attached to one of its sides.
+ *
+ * @param arrowPosition Specifies which side of the bubble body the arrow will be on ([ArrowPosition.LEFT], [ArrowPosition.RIGHT], [ArrowPosition.TOP], [ArrowPosition.BOTTOM]).
+ * @param arrowOffset The offset of the arrow's base center from the center of the corresponding side of the bubble body.
+ *                    For [ArrowPosition.TOP] and [ArrowPosition.BOTTOM], this is a horizontal offset.
+ *                    For [ArrowPosition.LEFT] and [ArrowPosition.RIGHT], this is a vertical offset.
+ * @param arrowWidth The width of the arrow's base.
+ * @param arrowHeight The length (height) of the arrow from its base to its tip.
+ * @param cornerRadius The corner radius for the bubble body.
  */
 private class BubbleShape(
     private val arrowPosition: ArrowPosition,
@@ -161,6 +171,16 @@ private class BubbleShape(
     }
 }
 
+/**
+ * Displays a Bubble managed by a [BubbleShowController].
+ * This overload simplifies showing bubbles in a sequence or controlled manner,
+ * deriving most settings and state from the controller.
+ *
+ * @param modifier Modifier for this composable.
+ * @param controller The [BubbleShowController] managing this bubble's display and behavior.
+ * @param bubbleData The [BubbleData] containing specific content and arrow position for this bubble.
+ * @param isVisible Controls the visibility of the bubble. Typically managed by the controller.
+ */
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -194,8 +214,17 @@ fun Bubble(
 }
 
 /**
- * Компонент Bubble с хвостиком, позиционируемый относительно целевого Composable.
- * Перегруженная функция, принимающая объекты BubblesSettings и BubbleData.
+ * Displays a Bubble with explicit settings and target.
+ * This overload provides fine-grained control over a single bubble's appearance and behavior
+ * when not using a [BubbleShowController].
+ *
+ * @param modifier Modifier for this composable.
+ * @param settings The [BubblesSettings] to configure the bubble's appearance and animations.
+ * @param bubbleData The [BubbleData] containing the unique ID, content, and arrow position.
+ * @param targetComponentRect The [Rect] of the target component this bubble is pointing to. If null, the bubble is not shown.
+ * @param onDismissRequest Callback invoked when the bubble requests to be dismissed.
+ * @param onStopShowRequest Callback invoked when a request to stop an entire bubble sequence is made (if applicable).
+ * @param isVisible Controls the visibility of the bubble.
  */
 @Composable
 fun Bubble(
@@ -204,7 +233,7 @@ fun Bubble(
     bubbleData: BubbleData,
     targetComponentRect: Rect?,
     onDismissRequest: () -> Unit = {},
-    onStopShowRequest: () -> Unit = {}, // Added
+    onStopShowRequest: () -> Unit = {},
     isVisible: Boolean = true,
 ) {
     Bubble(
@@ -233,31 +262,36 @@ fun Bubble(
 }
 
 /**
- * Компонент Bubble с хвостиком, позиционируемый относительно целевого Composable.
+ * A composable that displays a customizable bubble, pointing to a target UI element.
+ * It includes a scrim background, entrance/exit animations, and positioning logic
+ * to place the bubble relative to a [targetComponentRect].
  *
- * @param modifier Модификатор для Bubble.
- * @param id Уникальный ключ для идентификации пузыря, используется для анимации.
- * @param targetComponentRect Прямоугольник, представляющий границы целевого элемента в оконных координатах.
- * @param arrowPosition Позиция хвостика Bubble (LEFT, RIGHT, TOP, BOTTOM) относительно целевого элемента.
- * @param arrowWidth Ширина основания хвостика.
- * @param arrowHeight Длина хвостика.
- * @param cornerRadius Радиус закругления углов Bubble.
- * @param backgroundColor Цвет фона Bubble.
- * @param bubbleBorderColor Цвет каймы Bubble.
- * @param bubbleBorderWidth Ширина каймы Bubble.
- * @param horizontalScreenPadding Отступ от левой и правой границ экрана.
- * @param verticalScreenPadding Отступ от верхней и нижней границ экрана.
- * @param scrimColor Цвет полупрозрачного фона под пузырем (включает прозрачность).
- * @param dismissOnScrimClick Если true, нажатие на полупрозрачный фон скроет пузырь.
- * @param onDismissRequest Колбэк, вызываемый при запросе на скрытие пузыря.
- * @param onStopShowRequest Колбэк, вызываемый для полной остановки показа бабблов.
- * @param arrowTargetOffset Смещение стрелки относительно центра целевого компонента.
- * Положительное значение смещает стрелку от целевого компонента,
- * отрицательное - к нему.
- * @param enterAnimationDurationMs Продолжительность анимации появления пузыря.
- * @param exitAnimationDurationMs Продолжительность анимации исчезновения пузыря.
- * @param isVisible Управляет видимостью пузыря.
- * @param content Содержимое Bubble.
+ * The bubble's appearance and behavior are highly configurable.
+ *
+ * @param modifier Modifier for this composable.
+ * @param id A unique identifier for the bubble, used for transition state.
+ * @param targetComponentRect The [Rect] of the target component this bubble is pointing to. If null, the bubble is not shown.
+ * @param arrowPosition The side of the bubble where the arrow should appear.
+ * @param arrowWidth The width of the arrow's base.
+ * @param arrowHeight The height (length) of the arrow.
+ * @param cornerRadius The corner radius of the bubble's body.
+ * @param backgroundColor The background color of the bubble.
+ * @param bubbleBorderColor The color of the bubble's border.
+ * @param bubbleBorderWidth The width of the bubble's border.
+ * @param horizontalScreenPadding Horizontal padding from the screen edges.
+ * @param verticalScreenPadding Vertical padding from the screen edges.
+ * @param scrimColor The color of the scrim background displayed behind the bubble.
+ * @param dismissOnScrimClick If true, the bubble will be dismissed when the scrim is clicked.
+ * @param onDismissRequest Callback invoked when the bubble requests to be dismissed (e.g., scrim click, or action within content).
+ * @param onStopShowRequest Callback invoked when a request to stop the entire bubble sequence is made (e.g., by an action within content).
+ * @param arrowTargetOffset An offset applied to the arrow's position along the axis of the target component's side.
+ *                          For example, for [ArrowPosition.LEFT], this will shift the bubble vertically along the left edge of the target.
+ * @param enterAnimationDurationMs Duration of the enter animation in milliseconds.
+ * @param exitAnimationDurationMs Duration of the exit animation in milliseconds.
+ * @param isVisible Controls the visibility of the bubble. Triggers enter/exit animations.
+ * @param content The composable content to be displayed inside the bubble. It receives two lambda functions:
+ *                `onDismissClick` (which is `onDismissRequest`) and `onStopShowRequest`
+ *                that can be used to dismiss the current bubble or stop the entire bubble sequence, respectively.
  */
 @Composable
 fun Bubble(
@@ -281,7 +315,7 @@ fun Bubble(
     enterAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS,
     exitAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS,
     isVisible: Boolean = true,
-    content: @Composable (onActionClick: () -> Unit, onStopShowRequest: () -> Unit) -> Unit, // Modified signature
+    content: @Composable (onDismissClick: () -> Unit, onStopShowRequest: () -> Unit) -> Unit,
 ) {
     if (targetComponentRect == null) return
 
@@ -342,7 +376,6 @@ fun Bubble(
                     }
                     // Максимальная высота, которую может занять *весь пузырь*
                     val finalMaxBubbleFullHeightPx = maxBubbleAreaOnScreenHeightPx
-
 
                     // Определяем внутренние отступы в границах пузыря, занимаемые не-контентными элементами (углы, тело стрелки)
                     // Это используется для определения пространства для самого контента.
@@ -630,14 +663,6 @@ fun BubblePreviewScreen() {
 
     val commonSettings = remember {
         BubblesSettings(
-            arrowWidth = DEFAULT_ARROW_WIDTH,
-            arrowHeight = DEFAULT_ARROW_HEIGHT,
-            cornerRadius = DEFAULT_CORNER_RADIUS,
-            backgroundColor = DEFAULT_BACKGROUND_COLOR, // This will be overridden per bubble
-            bubbleBorderColor = DEFAULT_BORDER_COLOR, // Default border color from settings
-            bubbleBorderWidth = DEFAULT_BORDER_WIDTH, // Default border width from settings
-            horizontalScreenPadding = DEFAULT_HORIZONTAL_SCREEN_PADDING,
-            verticalScreenPadding = DEFAULT_VERTICAL_SCREEN_PADDING,
             scrimColor = Color(0x00000000),
             dismissOnScrimClick = true,
             enterAnimationDurationMs = 0,
@@ -674,11 +699,11 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "TopStart",
                 arrowPosition = ArrowPosition.BOTTOM,
-                content = { onActionClick, onStopShowRequest ->
+                content = { onDismissClick, onStopShowRequest ->
                     Text(
                         "Bubble TopStart", color = Color.White, modifier = Modifier
                             .padding(8.dp)
-                            .clickable { onActionClick() })
+                            .clickable { onDismissClick() })
                 }
             ),
             targetComponentRect = targetRectTopLeft,
@@ -710,11 +735,11 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "TopEnd",
                 arrowPosition = ArrowPosition.LEFT,
-                content = { onActionClick, onStopShowRequest ->
+                content = { onDismissClick, onStopShowRequest ->
                     Text(
                         "Bubble TopEnd", color = Color.Black, modifier = Modifier
                             .padding(8.dp)
-                            .clickable { onActionClick() })
+                            .clickable { onDismissClick() })
                 }
             ),
             targetComponentRect = targetRectTopRight,
@@ -745,11 +770,11 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "bubble3",
                 arrowPosition = ArrowPosition.RIGHT,
-                content = { onActionClick, onStopShowRequest ->
+                content = { onDismissClick, onStopShowRequest ->
                     Text(
                         "Bubble BottomStart", color = Color.Black, modifier = Modifier
                             .padding(8.dp)
-                            .clickable { onActionClick() })
+                            .clickable { onDismissClick() })
                 }
             ),
             targetComponentRect = targetRectBottomLeft,
@@ -780,11 +805,11 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "bubble4",
                 arrowPosition = ArrowPosition.TOP,
-                content = { onActionClick, onStopShowRequest ->
+                content = { onDismissClick, onStopShowRequest ->
                     Text(
                         "Bubble BottomEnd", color = Color.White, modifier = Modifier
                             .padding(8.dp)
-                            .clickable { onActionClick() })
+                            .clickable { onDismissClick() })
                 }
             ),
             targetComponentRect = targetRectBottomRight,
@@ -814,11 +839,11 @@ fun BubblePreviewScreen() {
             bubbleData = BubbleData(
                 id = "bubbleCenter",
                 arrowPosition = ArrowPosition.BOTTOM,
-                content = { onActionClick, onStopShowRequest -> // Already correct in preview
+                content = { onDismissClick, onStopShowRequest -> // Already correct in preview
                     Text(
                         "Bubble Center with Red Border", color = Color.White, modifier = Modifier
                             .padding(8.dp)
-                            .clickable { onActionClick() })
+                            .clickable { onDismissClick() })
                 }
             ),
             targetComponentRect = targetRectCenter,

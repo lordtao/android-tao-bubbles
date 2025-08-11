@@ -1,5 +1,9 @@
 package ua.at.tsvetkov.bubbles
 
+/**
+ * Created by Alexandr Tsvetkov on 28.07.2025.
+ */
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -14,7 +18,7 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 
 /**
- * Manages the state and flow of a sequence of bubbles to be shown on screen.
+ * Manages the state and showing of a sequence of bubbles to be shown on screen.
  *
  * This controller keeps track of the current bubble, its target component's position,
  * and the overall visibility of the bubble sequence. It provides methods to advance
@@ -92,28 +96,27 @@ class BubbleShowController(
     }
 
     /**
-     * A Composable function that shows the current bubble if it's valid and visible.
-     * It invokes the provided [function] lambda with the [currentBubbleData].
-     * Marks the current bubble as "shown" if it hasn't been already.
-     *
-     * @param function A Composable lambda that defines how to render the bubble,
-     *                 receiving the current [BubbleData].
+     * Start showing a sequence of bubbles that will be shown on the screen
      */
     @Composable
-    fun ShowBubble(function: @Composable (data: BubbleData) -> Unit) {
-        val isNotShowed = currentBubbleData?.isNotShowed() ?: true
-        if (currentBubbleData != null && isVisible && isNotShowed) {
-            currentBubbleData?.setShowed()
-            function.invoke(currentBubbleData!!)
+    fun ShowBubbles() {
+        currentBubbleData?.let {bubbleData ->
+            if (isVisible && bubbleData.isNotShowed()) {
+                bubbleData.setShowed()
+                Bubble(
+                    bubbleData = bubbleData,
+                    controller = this
+                )
+            }
         }
     }
 
     /**
-     * Resets the bubble show sequence to its initial state.
+     * Restarts the bubble show sequence.
      * All bubbles are marked as "not shown", the index is reset to the first bubble,
      * and [isVisible] is set to `true`.
      */
-    fun resetShow() {
+    fun restartShow() {
         bubbles.forEach { it.setNotShowed() }
         currentBubbleIndex = 0
         isVisible = true

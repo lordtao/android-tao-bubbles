@@ -33,41 +33,41 @@ object TestData {
         BubbleData(
             id = "Bubble 1",
             arrowPosition = ArrowPosition.BOTTOM,
-            content = { onActionClick, onStopShowRequest ->
-                MyContent("Bubble 1", onStopShowRequest, onActionClick)
+            content = { onDismissClick, onStopShowRequest ->
+                MyContent("Bubble 1", onDismissClick, onStopShowRequest)
             }
         ),
         BubbleData(
             id = "Bubble 2",
             arrowPosition = ArrowPosition.LEFT,
-            content = { onActionClick, onStopShowRequest ->
-                MyContent("Bubble 2", onStopShowRequest, onActionClick)
+            content = { onDismissClick, onStopShowRequest ->
+                MyContent("Bubble 2", onDismissClick, onStopShowRequest)
             }
         ),
         BubbleData(
             id = "Bubble 3",
             arrowPosition = ArrowPosition.RIGHT,
-            content = { onActionClick, onStopShowRequest ->
-                MyContent("Bubble 3", onStopShowRequest, onActionClick)
+            content = { onDismissClick, onStopShowRequest ->
+                MyContent("Bubble 3", onDismissClick, onStopShowRequest)
             }
         ),
         BubbleData(
             id = "Bubble 4",
             arrowPosition = ArrowPosition.TOP,
-            content = { onActionClick, onStopShowRequest ->
-                MyContent("Bubble 4", onStopShowRequest, onActionClick)
+            content = { onDismissClick, onStopShowRequest ->
+                MyContent("Bubble 4", onDismissClick, onStopShowRequest)
             }
         ),
         BubbleData(
             id = "Bubble 5",
-            content = { onActionClick, onStopShowRequest ->
-                MyContent("Bubble 5", onStopShowRequest, onActionClick)
+            content = { onDismissClick, onStopShowRequest ->
+                MyContent("Bubble 5", onDismissClick, onStopShowRequest)
             }
         ),
     )
 
     @Composable
-    private fun MyContent(title: String, onStopShowRequest: () -> Unit, onActionClick: () -> Unit) {
+    private fun MyContent(title: String, onDismissClick: () -> Unit, onStopShowRequest: () -> Unit) {
         Column(
             modifier = Modifier
                 .padding(8.dp)
@@ -90,7 +90,7 @@ object TestData {
                 Spacer(Modifier.weight(1f))
                 Button(
                     onClick = {
-                        onActionClick() // Call onActionClick for "Next"
+                        onDismissClick() // Call onDismissClick for "Next"
                     }) {
                     Text("Next", color = Color.White)
                 }
