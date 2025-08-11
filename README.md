@@ -1,4 +1,5 @@
 # TAO Bubbles
+for Jetpack Compose
 =====================
 
 A lightweight Jetpack Compose library for displaying customizable "bubbles", "showcases" or "tooltips" that can point to specific UI elements. 
