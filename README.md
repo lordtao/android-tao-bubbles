@@ -1,18 +1,18 @@
-# android-tao-bubbles
+# TAO Bubbles
 =====================
 
-A lightweight Jetpack Compose library for displaying customizable "bubbles", "bubbles show" or "tooltips" that can point to specific UI elements. 
+A lightweight Jetpack Compose library for displaying customizable "bubbles", "showcases" or "tooltips" that can point to specific UI elements. 
 This is useful for tutorials, feature highlights, or contextual help.
 
 ## Features
 
-*   **Customizable Appearance**: Control arrow position, size, corner radius, colors, borders, and more.
+*   **Customizable Appearance**: Control arrow position, size, corner radius, colors, borders, and more.  You can easily adapt the style of your tooltips to match your app's design.
 *   **Flexible Positioning**: Bubbles can point to any side of a target composable (`LEFT`, `RIGHT`, `TOP`, `BOTTOM`).
-*   **Screen Boundary Awareness**: Bubbles adjust their position to stay within screen bounds.
-*   **Sequential Display**: Use `BubbleShowController` to easily display a series of bubbles.
-*   **Enter/Exit Animations**: Smooth animations for bubble appearance and disappearance.
-*   **Scrim Background**: Optional scrim to dim the background when a bubble is shown.
-*   **Declarative API**: Built with Jetpack Compose for a modern Android UI.
+*   **Screen Boundary Awareness**: Bubbles automatically adjust their position to stay within screen bounds, ensuring a great user experience on any device.
+*   **Sequential Display**: Use `BubbleShowController` to easily display a series of bubbles one by one, guiding the user through multiple steps.
+*   **Enter/Exit Animations**: Smooth and customizable animations for bubble appearance and disappearance make interactions more dynamic.
+*   **Scrim Background**: An optional scrim layer dims the background, helping to focus the user's attention on the bubble.
+*   **Declarative API**: Built with Jetpack Compose for a modern Android UI, offering a simple and intuitive API.
 
 [Download the latest release and demo](https://github.com/lordtao/android-tao-bubble/releases)
 

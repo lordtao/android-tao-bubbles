@@ -841,7 +841,7 @@ fun BubblePreviewScreen() {
                 arrowPosition = ArrowPosition.BOTTOM,
                 content = { onDismissClick, onStopShowRequest -> // Already correct in preview
                     Text(
-                        "Bubble Center with Red Border", color = Color.White, modifier = Modifier
+                        "Bubble Center with Border", color = Color.White, modifier = Modifier
                             .padding(8.dp)
                             .clickable { onDismissClick() })
                 }
