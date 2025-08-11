@@ -97,9 +97,7 @@ kotlin {
 }
 
 dependencies {
-    debugImplementation(mapOf("name" to "taolog-debug", "ext" to "aar"))
     debugImplementation(mapOf("name" to "taocore-debug", "ext" to "aar"))
-    releaseImplementation(mapOf("name" to "taolog", "ext" to "aar"))
     releaseImplementation(mapOf("name" to "taocore", "ext" to "aar"))
 
     implementation(libs.androidx.core.ktx)
