@@ -171,6 +171,38 @@ private class BubbleShape(
     }
 }
 
+@Composable
+fun Bubble(
+    modifier: Modifier = Modifier,
+    controller: BubbleShowControllerExtended,
+    bubbleData: BubbleDataExtended,
+    isVisible: Boolean = true,
+) {
+    Bubble(
+        modifier = modifier,
+        id = bubbleData.getId(),
+        targetComponentRect = controller.currentTargetRect,
+        arrowPosition = bubbleData.data.arrowPosition,
+        arrowWidth = bubbleData.settings.arrowWidth,
+        arrowHeight = bubbleData.settings.arrowHeight,
+        cornerRadius = bubbleData.settings.cornerRadius,
+        backgroundColor = bubbleData.settings.backgroundColor,
+        bubbleBorderColor = bubbleData.settings.bubbleBorderColor,
+        bubbleBorderWidth = bubbleData.settings.bubbleBorderWidth,
+        horizontalScreenPadding = bubbleData.settings.horizontalScreenPadding,
+        verticalScreenPadding = bubbleData.settings.verticalScreenPadding,
+        scrimColor = bubbleData.settings.scrimColor,
+        dismissOnScrimClick = bubbleData.settings.dismissOnScrimClick,
+        onDismissRequest = { controller.showNext() },
+        onStopShowRequest = { controller.stopShow() }, // Added
+        arrowTargetOffset = bubbleData.settings.arrowTargetOffset,
+        enterAnimationDurationMs = bubbleData.settings.enterAnimationDurationMs,
+        exitAnimationDurationMs = bubbleData.settings.exitAnimationDurationMs,
+        isVisible = isVisible,
+        content = bubbleData.data.content
+    )
+}
+
 /**
  * Displays a Bubble managed by a [BubbleShowController].
  * This overload simplifies showing bubbles in a sequence or controlled manner,
@@ -365,17 +397,17 @@ fun Bubble(
                     val vScreenPaddingPx = with(density) { verticalScreenPadding.toPx() }
 
                     // constraints.maxWidth это фактически ширина устройства, constraints.maxHeight - высота устройства
-                    val maxBubbleAreaOnScreenWidthPx = constraints.maxWidth - 2 * hScreenPaddingPx
+                    val maxBubbleAreaOnScreenWidthPx = constraints.maxWidth - 2 * hScreenPaddingPx // For TOP/BOTTOM arrows
                     val maxBubbleAreaOnScreenHeightPx = constraints.maxHeight - 2 * vScreenPaddingPx
 
-                    // Максимальная ширина, которую может занять *весь пузырь*, учитывая целевой компонент для LEFT/RIGHT
-                    val finalMaxBubbleFullWidthPx = if (arrowPosition == ArrowPosition.LEFT || arrowPosition == ArrowPosition.RIGHT) {
-                        (maxBubbleAreaOnScreenWidthPx - targetComponentRect.width).coerceAtLeast(0f)
-                    } else {
-                        maxBubbleAreaOnScreenWidthPx
+                    // Максимальная ширина, которую может занять *весь пузырь*
+                    val finalMaxBubbleFullWidthPx = when (arrowPosition) {
+                        ArrowPosition.LEFT -> (targetComponentRect.left - hScreenPaddingPx).coerceAtLeast(0f)
+                        ArrowPosition.RIGHT -> (constraints.maxWidth - targetComponentRect.right - hScreenPaddingPx).coerceAtLeast(0f)
+                        else -> maxBubbleAreaOnScreenWidthPx // For TOP and BOTTOM
                     }
                     // Максимальная высота, которую может занять *весь пузырь*
-                    val finalMaxBubbleFullHeightPx = maxBubbleAreaOnScreenHeightPx
+                    val finalMaxBubbleFullHeightPx = maxBubbleAreaOnScreenHeightPx // This remains generally applicable
 
                     // Определяем внутренние отступы в границах пузыря, занимаемые не-контентными элементами (углы, тело стрелки)
                     // Это используется для определения пространства для самого контента.
@@ -437,8 +469,8 @@ fun Bubble(
                     val arrowTargetOffsetPx = with(density) { arrowTargetOffset.toPx() }
 
                     val desiredBubbleX = when (arrowPosition) {
-                        ArrowPosition.LEFT -> targetCenterX - (targetWidthPx / 2) - constrainedBubbleFullWidthPx + arrowTargetOffsetPx
-                        ArrowPosition.RIGHT -> targetCenterX + (targetWidthPx / 2) + arrowTargetOffsetPx
+                        ArrowPosition.LEFT -> targetComponentRect.left - constrainedBubbleFullWidthPx + arrowTargetOffsetPx // Adjusted: No targetWidth/2, points to the left edge
+                        ArrowPosition.RIGHT -> targetComponentRect.right + arrowTargetOffsetPx // Adjusted: No targetWidth/2
                         ArrowPosition.TOP, ArrowPosition.BOTTOM -> targetCenterX - (constrainedBubbleFullWidthPx / 2)
                     }
 
@@ -448,13 +480,14 @@ fun Bubble(
                         ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterYAdjusted - (constrainedBubbleFullHeightPx / 2)
                     }
 
-                    val minX = with(density) { horizontalScreenPadding.toPx() } //+ shiftLeftX
-                    val maxX = with(density) { screenWidth.toPx() } - constrainedBubbleFullWidthPx - minX// - shiftRightX
+                    val minX = hScreenPaddingPx
+                    val maxX = constraints.maxWidth - constrainedBubbleFullWidthPx - hScreenPaddingPx
                     val finalBubbleX = desiredBubbleX.coerceIn(minX, maxX)
 
                     val minY = with(density) { verticalScreenPadding.toPx() }
                     val maxY = with(density) { screenHeight.toPx() } - constrainedBubbleFullHeightPx - navigationBarsHeightPx - statusBarHeightPx - minY
                     val finalBubbleY = desiredBubbleY.coerceIn(minY, maxY)
+
 
                     val finalArrowOffsetPx = when (arrowPosition) {
                         ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterYAdjusted - finalBubbleY

@@ -20,82 +20,81 @@ import ua.at.tsvetkov.bubbles.ui.theme.Purple40
 /**
  * Created by Alexandr Tsvetkov on 10.08.2025.
  */
-object TestData {
 
-    val testSettings = BubblesSettings(
-        scrimColor = Color(0x22002EFF),
-        backgroundColor = OrangeVeryLight,
-        bubbleBorderColor = Color.Black,
-        bubbleBorderWidth = 2.dp
-    )
+val testSettings = BubblesSettings(
+    scrimColor = Color(0x22002EFF),
+    backgroundColor = OrangeVeryLight,
+    bubbleBorderColor = Color.Black,
+    bubbleBorderWidth = 2.dp,
+)
 
-    val testBubbles = listOf(
-        BubbleData(
-            id = "Bubble 1",
-            arrowPosition = ArrowPosition.BOTTOM,
-            content = { onDismissClick, onStopShowRequest ->
-                MyContent("Bubble 1", onDismissClick, onStopShowRequest)
-            }
-        ),
-        BubbleData(
-            id = "Bubble 2",
-            arrowPosition = ArrowPosition.LEFT,
-            content = { onDismissClick, onStopShowRequest ->
-                MyContent("Bubble 2", onDismissClick, onStopShowRequest)
-            }
-        ),
-        BubbleData(
-            id = "Bubble 3",
-            arrowPosition = ArrowPosition.RIGHT,
-            content = { onDismissClick, onStopShowRequest ->
-                MyContent("Bubble 3", onDismissClick, onStopShowRequest)
-            }
-        ),
-        BubbleData(
-            id = "Bubble 4",
-            arrowPosition = ArrowPosition.TOP,
-            content = { onDismissClick, onStopShowRequest ->
-                MyContent("Bubble 4", onDismissClick, onStopShowRequest)
-            }
-        ),
-        BubbleData(
-            id = "Bubble 5",
-            content = { onDismissClick, onStopShowRequest ->
-                MyContent("Bubble 5", onDismissClick, onStopShowRequest)
-            }
-        ),
-    )
+val testBubbles = listOf(
+    BubbleData(
+        id = "Bubble 1",
+        arrowPosition = ArrowPosition.BOTTOM,
+        content = { onDismissClick, onStopShowRequest ->
+            MyContent("Bubble 1", onDismissClick, onStopShowRequest)
+        }
+    ),
+    BubbleData(
+        id = "Bubble 2",
+        arrowPosition = ArrowPosition.LEFT,
+        content = { onDismissClick, onStopShowRequest ->
+            MyContent("Bubble 2", onDismissClick, onStopShowRequest)
+        }
+    ),
+    BubbleData(
+        id = "Bubble 3",
+        arrowPosition = ArrowPosition.RIGHT,
+        content = { onDismissClick, onStopShowRequest ->
+            MyContent("Bubble 3", onDismissClick, onStopShowRequest)
+        }
+    ),
+    BubbleData(
+        id = "Bubble 4",
+        arrowPosition = ArrowPosition.TOP,
+        content = { onDismissClick, onStopShowRequest ->
+            MyContent("Bubble 4", onDismissClick, onStopShowRequest)
+        }
+    ),
+    BubbleData(
+        id = "Bubble 5",
+        content = { onDismissClick, onStopShowRequest ->
+            MyContent("Bubble 5", onDismissClick, onStopShowRequest)
+        }
+    ),
+)
 
-    @Composable
-    private fun MyContent(title: String, onDismissClick: () -> Unit, onStopShowRequest: () -> Unit) {
-        Column(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
+@Composable
+private fun MyContent(title: String, onDismissClick: () -> Unit, onStopShowRequest: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+    ) {
+        Text(title, color = Purple40, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("Example of bubble help. You can insert your Composable object instead. This is just an example. Text can be multiline.", color = Color.Black)
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(title, color = Purple40, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("Example of bubble help. You can insert your Composable object instead. This is just an example. Text can be multiline.", color = Color.Black)
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = {
-                        onStopShowRequest() // Call onStopShowRequest
-                    }) {
-                    Text("Stop Show", color = Color.White)
-                }
-                Spacer(Modifier.weight(1f))
-                Button(
-                    onClick = {
-                        onDismissClick() // Call onDismissClick for "Next"
-                    }) {
-                    Text("Next", color = Color.White)
-                }
+            Button(
+                onClick = {
+                    onStopShowRequest() // Call onStopShowRequest
+                }) {
+                Text("Stop Show", color = Color.White)
+            }
+            Spacer(Modifier.weight(1f))
+            Button(
+                onClick = {
+                    onDismissClick() // Call onDismissClick for "Next"
+                }) {
+                Text("Next", color = Color.White)
             }
         }
     }
-
 }
+
+

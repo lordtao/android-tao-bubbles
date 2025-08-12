@@ -33,9 +33,6 @@ package ua.at.tsvetkov.bubbles
 
 import android.app.Application
 import ua.at.tsvetkov.application.AppConfig
-import ua.at.tsvetkov.util.BuildConfig
-import ua.at.tsvetkov.util.logger.Log
-import ua.at.tsvetkov.util.logger.LogComponents
 
 /**
  * Created by Alexandr Tsvetkov on 10.08.2025.
@@ -48,10 +45,5 @@ class AppBubbleDemo : Application() {
         AppConfig.init(this)
         AppConfig.printInfo()
 
-        if (BuildConfig.DEBUG) {
-            LogComponents.enableComponentsChangesLogging(this)
-        } else {
-            Log.setDisabled()
-        }
     }
 }

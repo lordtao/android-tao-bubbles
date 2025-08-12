@@ -18,7 +18,7 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 
 /**
- * Manages the state and showing of a sequence of bubbles to be shown on screen.
+ * Manages the state and showing of a sequence of bubbles to be shown on screen with full customization of each bubble.
  *
  * This controller keeps track of the current bubble, its target component's position,
  * and the overall visibility of the bubble sequence. It provides methods to advance
@@ -27,14 +27,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
  * It is recommended to create and manage instances of this controller using
  * the [rememberBubbleShowController] Composable function.
  *
- * @property bubbles The immutable list of [BubbleData] objects defining the sequence.
+ * @property bubbles The immutable list of [BubbleDataExtended] objects defining the sequence.
  * @property onFinished A lambda invoked when the last bubble in the sequence has been shown
  *                      and the show is considered finished.
  */
 @Stable
-class BubbleShowController(
-    val settings: BubblesSettings = BubblesSettings(),
-    private val bubbles: List<BubbleData>,
+class BubbleShowControllerExtended(
+    private val bubbles: List<BubbleDataExtended>,
     val onFinished: () -> Unit = {},
 ) {
     private var currentBubbleIndex by mutableIntStateOf(0)
@@ -49,29 +48,29 @@ class BubbleShowController(
 
     /**
      * Internal map holding the screen bounds ([Rect]) of target components,
-     * keyed by their unique identifiers (usually [BubbleData.id]).
+     * keyed by their unique identifiers (usually [BubbleDataExtended.getId]).
      * This map is updated by the [Modifier.assignBubble] extension.
      */
     internal val targetRectsMap = mutableStateMapOf<String, Rect?>()
 
     /**
-     * The [BubbleData] for the currently active bubble in the sequence.
+     * The [BubbleDataExtended] for the currently active bubble in the sequence.
      * Returns `null` if the sequence is out of bounds (e.g., completed).
      */
-    val currentBubbleData: BubbleData?
+    val current: BubbleDataExtended?
         get() = bubbles.getOrNull(currentBubbleIndex)
 
     /**
-     * The screen bounds ([Rect]) of the target component for the [currentBubbleData].
+     * The screen bounds ([Rect]) of the target component for the [current].
      * Returns `null` if there is no current bubble or if its target's bounds
      * have not yet been determined or registered via [Modifier.assignBubble].
      */
     val currentTargetRect: Rect?
-        get() = currentBubbleData?.let { targetRectsMap[it.id] }
+        get() = current?.let { targetRectsMap[it.getId()] }
 
     init {
         val firstBubbleIdForShow = bubbles.indexOfFirst {
-            it.isNotShowed()
+            it.data.isNotShowed()
         }.takeIf { it != -1 }
 
         if (firstBubbleIdForShow != null) {
@@ -100,9 +99,9 @@ class BubbleShowController(
      */
     @Composable
     fun ShowBubbles() {
-        currentBubbleData?.let {bubbleData ->
-            if (isVisible && bubbleData.isNotShowed()) {
-                bubbleData.setShowed()
+        current?.let { bubbleData ->
+            if (isVisible && bubbleData.data.isNotShowed()) {
+                bubbleData.data.setShowed()
                 Bubble(
                     bubbleData = bubbleData,
                     controller = this
@@ -117,7 +116,7 @@ class BubbleShowController(
      * and [isVisible] is set to `true`.
      */
     fun restartShow() {
-        bubbles.forEach { it.setNotShowed() }
+        bubbles.forEach { it.data.setNotShowed() }
         currentBubbleIndex = 0
         isVisible = true
     }
@@ -128,7 +127,7 @@ class BubbleShowController(
      * the index is reset, and [isVisible] is set to `false`.
      */
     fun stopShow() {
-        bubbles.forEach { it.setShowed() }
+        bubbles.forEach { it.data.setShowed() }
         currentBubbleIndex = 0
         isVisible = false
     }
@@ -137,7 +136,7 @@ class BubbleShowController(
      * Updates the screen bounds ([Rect]) for a target component associated with a given key.
      * This function is typically called by the [Modifier.assignBubble] extension.
      *
-     * @param key The unique identifier for the target component (usually [BubbleData.id]).
+     * @param key The unique identifier for the target component (usually [BubbleDataExtended.getId]).
      * @param rect The new screen bounds for the target component.
      */
     internal fun updateTargetRect(key: String, rect: Rect?) {
@@ -154,27 +153,24 @@ class BubbleShowController(
  *
  * The controller will be re-created if the [bubbles] list instance changes.
  *
- * @param settings common [BubblesSettings] for [bubbles]
- *
- * @param bubbles The list of [BubbleData] objects defining the sequence of bubbles to be shown.
+ * @param bubbles The list of [BubbleDataExtended] objects defining the sequence of bubbles to be shown.
  *                If this list instance changes, the [BubbleShowController] will be reset.
  * @param onFinished A lambda that will be invoked when the last bubble in the sequence
  *                   has been shown and the show is finished. Defaults to an empty lambda.
  * @return An instance of [BubbleShowController] that manages the bubble show sequence.
  */
 @Composable
-fun rememberBubbleShowController(
-    settings: BubblesSettings,
-    bubbles: List<BubbleData>,
+fun rememberBubbleShowExtendedController(
+    bubbles: List<BubbleDataExtended>,
     onFinished: () -> Unit = {},
-): BubbleShowController {
+): BubbleShowControllerExtended {
     return remember(bubbles) {
-        BubbleShowController(settings, bubbles, onFinished)
+        BubbleShowControllerExtended(bubbles, onFinished)
     }
 }
 
 /**
- * A [Modifier] extension function that associates a Composable with a specific [BubbleData]
+ * A [Modifier] extension function that associates a Composable with a specific [BubbleDataExtended]
  * and registers its screen bounds with the provided [BubbleShowController].
  *
  * This allows the [BubbleShowController] to determine the position of the target
@@ -185,17 +181,17 @@ fun rememberBubbleShowController(
  * ```
  * Text(
  *     text = "Target Text",
- *     modifier = Modifier.assignBubble(myBubbleController, myBubbleDataForThisText)
+ *     modifier = Modifier.assignBubble(myBubbleController, myBubbleDataExtendedForThisText)
  * )
  * ```
  *
  * @param controller The [BubbleShowController] that manages the bubble sequence.
- * @param bubbleData The [BubbleData] instance associated with the Composable
+ * @param bubbleData The [BubbleDataExtended] instance associated with the Composable
  *                   to which this modifier is applied. The `id` of this `bubbleData`
  *                   is used as the key to store its bounds.
  * @return A new [Modifier] that includes the logic for tracking the Composable's position.
  */
-fun Modifier.assignBubble(controller: BubbleShowController, bubbleData: BubbleData): Modifier =
+fun Modifier.assignBubble(controller: BubbleShowControllerExtended, bubbleData: BubbleDataExtended): Modifier =
     this.onGloballyPositioned { coordinates ->
-        controller.updateTargetRect(bubbleData.id, coordinates.boundsInWindow())
+        controller.updateTargetRect(bubbleData.getId(), coordinates.boundsInWindow())
     }
