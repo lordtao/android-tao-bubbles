@@ -207,7 +207,7 @@ fun BubbleSequenceExample() {
 
 ```
 
-If you prefer to have full control and customization of each bubble, then use BubbleShowControllerExtended for control and BubbleDataExtended for customization of each bubble.
+If you prefer to have full control and customization of each bubble, then use **BubbleShowControllerExtended** for control and **BubbleDataExtended** for customization of each bubble.
 
 ## Contribution
 
