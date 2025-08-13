@@ -19,8 +19,6 @@ This is useful for tutorials, feature highlights, or contextual help.
 
 [Licence](https://opensource.org/license/mit)
 
-<img src="media/Preview.png" alt="drawing" width="420"/>
-
 <img src="media/Demo.gif" alt="drawing" width="420"/>
 
 **Example Usage (Single Bubble):**
