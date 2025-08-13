@@ -19,7 +19,7 @@ This is useful for tutorials, feature highlights, or contextual help.
 
 [Licence](https://opensource.org/license/mit)
 
-<img src="media/Demo.gif" alt="drawing" width="420"/>
+<p align="center"><img src="media/Demo.gif" alt="drawing" width="420"/></p>
 
 **Example Usage (Single Bubble):**
 
