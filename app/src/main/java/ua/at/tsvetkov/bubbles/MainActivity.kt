@@ -180,6 +180,18 @@ fun BubblesShowExample() {
             Text("End Ext", color = Color.White)
         }
 
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 120.dp)
+                .size(100.dp)
+                .background(Color(0xFF8BC34A))
+                .assignBubble(controller = bubbleShowControllerExtended, bubbleData = bubblesDataExtended[2]),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Somewhere", color = Color.White)
+        }
+
         Button(
             modifier = Modifier
                 .align(Alignment.TopCenter)

@@ -51,10 +51,24 @@ val testBubblesExtended = listOf(
             scrimColor = Color(0x33EEA4FF),
             backgroundColor = Color(0xFFEEA4FF),
             bubbleBorderColor = Color(0xFF9C00BE),
-            bubbleBorderWidth = 2.dp,
             cornerRadius = 32.dp,
             arrowWidth = 30.dp,
             arrowHeight = 10.dp,
+        )
+    ),
+    BubbleDataExtended(
+        BubbleData(
+            id = "Bubble Extended Settings 3",
+            arrowPosition = ArrowPosition.BOTTOM,
+            content = { onDismissClick, onStopShowRequest ->
+                MyContentExtended("Bubble Extended Settings 3", onDismissClick, onStopShowRequest)
+            }
+        ),
+        BubblesSettings(
+            scrimColor = Color(0x33FFEB3B),
+            backgroundColor = Color(0xFFFFEB3B),
+            bubbleBorderWidth = 4.dp,
+            bubbleBorderColor = Color(0xFF9C00BE),
         )
     ),
 )
