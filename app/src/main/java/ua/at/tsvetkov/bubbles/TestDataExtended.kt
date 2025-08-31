@@ -14,6 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import ua.at.tsvetkov.bubbles.compose.ArrowPosition
+import ua.at.tsvetkov.bubbles.compose.BubbleData
+import ua.at.tsvetkov.bubbles.compose.BubbleDataExtended
+import ua.at.tsvetkov.bubbles.compose.BubblesSettings
 import ua.at.tsvetkov.bubbles.ui.theme.Purple40
 
 /**

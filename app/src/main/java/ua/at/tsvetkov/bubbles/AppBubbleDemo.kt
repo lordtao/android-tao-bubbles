@@ -32,6 +32,8 @@
 package ua.at.tsvetkov.bubbles
 
 import android.app.Application
+import androidx.compose.runtime.Composer
+import androidx.compose.runtime.ExperimentalComposeRuntimeApi
 import ua.at.tsvetkov.application.AppConfig
 
 /**
@@ -39,11 +41,14 @@ import ua.at.tsvetkov.application.AppConfig
  */
 class AppBubbleDemo : Application() {
 
+    @OptIn(ExperimentalComposeRuntimeApi::class)
     override fun onCreate() {
         super.onCreate()
 
         AppConfig.init(this)
         AppConfig.printInfo()
+
+        Composer.setDiagnosticStackTraceEnabled(BuildConfig.DEBUG)
 
     }
 }

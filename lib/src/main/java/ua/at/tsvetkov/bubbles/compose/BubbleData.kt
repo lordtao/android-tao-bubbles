@@ -1,4 +1,4 @@
-package ua.at.tsvetkov.bubbles
+package ua.at.tsvetkov.bubbles.compose
 
 import androidx.compose.runtime.Composable
 import ua.at.tsvetkov.application.AppConfig

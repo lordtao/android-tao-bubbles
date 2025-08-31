@@ -1,4 +1,4 @@
-package ua.at.tsvetkov.bubbles
+package ua.at.tsvetkov.bubbles.compose
 
 /**
  * Created by Alexandr Tsvetkov on 28.07.2025.
@@ -55,16 +55,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_ANIMATION_DURATION_MS
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_ARROW_HEIGHT
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_ARROW_WIDTH
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_BACKGROUND_COLOR
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_BORDER_COLOR
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_BORDER_WIDTH
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_CORNER_RADIUS
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_HORIZONTAL_SCREEN_PADDING
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_SCRIM_COLOR
-import ua.at.tsvetkov.bubbles.BubblesSettings.Companion.DEFAULT_VERTICAL_SCREEN_PADDING
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Path as ComposePath
 
@@ -331,21 +321,21 @@ fun Bubble(
     id: String,
     targetComponentRect: Rect?,
     arrowPosition: ArrowPosition,
-    arrowWidth: Dp = DEFAULT_ARROW_WIDTH,
-    arrowHeight: Dp = DEFAULT_ARROW_HEIGHT,
-    cornerRadius: Dp = DEFAULT_CORNER_RADIUS,
-    backgroundColor: Color = DEFAULT_BACKGROUND_COLOR,
-    bubbleBorderColor: Color = DEFAULT_BORDER_COLOR,
-    bubbleBorderWidth: Dp = DEFAULT_BORDER_WIDTH,
-    horizontalScreenPadding: Dp = DEFAULT_HORIZONTAL_SCREEN_PADDING,
-    verticalScreenPadding: Dp = DEFAULT_VERTICAL_SCREEN_PADDING,
-    scrimColor: Color = DEFAULT_SCRIM_COLOR,
+    arrowWidth: Dp = BubblesSettings.Companion.DEFAULT_ARROW_WIDTH,
+    arrowHeight: Dp = BubblesSettings.Companion.DEFAULT_ARROW_HEIGHT,
+    cornerRadius: Dp = BubblesSettings.Companion.DEFAULT_CORNER_RADIUS,
+    backgroundColor: Color = BubblesSettings.Companion.DEFAULT_BACKGROUND_COLOR,
+    bubbleBorderColor: Color = BubblesSettings.Companion.DEFAULT_BORDER_COLOR,
+    bubbleBorderWidth: Dp = BubblesSettings.Companion.DEFAULT_BORDER_WIDTH,
+    horizontalScreenPadding: Dp = BubblesSettings.Companion.DEFAULT_HORIZONTAL_SCREEN_PADDING,
+    verticalScreenPadding: Dp = BubblesSettings.Companion.DEFAULT_VERTICAL_SCREEN_PADDING,
+    scrimColor: Color = BubblesSettings.Companion.DEFAULT_SCRIM_COLOR,
     dismissOnScrimClick: Boolean = false,
     onDismissRequest: () -> Unit = {},
     onStopShowRequest: () -> Unit = {},
     arrowTargetOffset: Dp = 0.dp,
-    enterAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS,
-    exitAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS,
+    enterAnimationDurationMs: Int = BubblesSettings.Companion.DEFAULT_ANIMATION_DURATION_MS,
+    exitAnimationDurationMs: Int = BubblesSettings.Companion.DEFAULT_ANIMATION_DURATION_MS,
     isVisible: Boolean = true,
     content: @Composable (onDismissClick: () -> Unit, onStopShowRequest: () -> Unit) -> Unit,
 ) {

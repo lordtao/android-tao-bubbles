@@ -20,6 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ua.at.tsvetkov.bubbles.compose.assignBubble
+import ua.at.tsvetkov.bubbles.compose.rememberBubbleShowController
+import ua.at.tsvetkov.bubbles.compose.rememberBubbleShowExtendedController
 import ua.at.tsvetkov.bubbles.ui.theme.MyApplicationTheme
 import ua.at.tsvetkov.bubbles.ui.theme.Purple40
 

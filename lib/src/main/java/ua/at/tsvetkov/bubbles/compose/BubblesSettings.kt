@@ -1,4 +1,4 @@
-package ua.at.tsvetkov.bubbles
+package ua.at.tsvetkov.bubbles.compose
 
 /**
  * Created by Alexandr Tsvetkov on 28.07.2025.
