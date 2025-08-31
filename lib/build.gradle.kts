@@ -154,7 +154,7 @@ afterEvaluate {
 // Publishing
 
 val repo = "android-tao-bubbles"
-val repoDescription = "Tiny, lightweight and informative logger for Android."
+val repoDescription = "A lightweight Jetpack Compose library for displaying customizable \"bubbles\", \"showcases\" or \"tooltips\" that can point to specific UI elements."
 
 val owner = "lordtao"
 val libGroupId = "ua.at.tsvetkov"
@@ -175,7 +175,7 @@ afterEvaluate {
                 from(components.getByName("release"))
 
                 pom {
-                    name.set(libArtifactId) // Или более описательное имя
+                    name.set(libArtifactId)
                     description.set(repoDescription)
                     url.set("https://github.com/$owner/$repo") // URL of your project
 
