@@ -37,9 +37,6 @@ captures/
 .idea/markdown-exported-files.xml
 .idea/misc.xml
 .idea/
-/gradle/wrapper/gradle-wrapper.jar
-/gradlew
-/gradlew.bat
 
 /aar
 /aar/*.*
