@@ -17,10 +17,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("file:///path/to/artifacts/") }
-        flatDir {
-            dirs("../android-tao-core/aar", "../android-tao-log/aar")
-        }
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

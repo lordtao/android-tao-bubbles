@@ -1,5 +1,7 @@
-# TAO Bubbles (for Jetpack Compose)
+# TAO Bubbles (for Jetpack Compose, Android)
 =====================
+
+[![](https://jitpack.io/v/lordtao/android-tao-bubbles.svg)](https://jitpack.io/#lordtao/android-tao-bubbles)
 
 A lightweight Jetpack Compose library for displaying customizable "bubbles", "showcases" or "tooltips" that can point to specific UI elements. 
 This is useful for tutorials, feature highlights, or contextual help.
@@ -17,9 +19,28 @@ This is useful for tutorials, feature highlights, or contextual help.
 
 [Download the latest release and demo](https://github.com/lordtao/android-tao-bubbles/releases)
 
+**To get a Git project into your build:**
+
+Step 1. Add the dependency with latest version [![](https://jitpack.io/v/lordtao/android-tao-bubbles.svg)](https://jitpack.io/#lordtao/android-tao-bubbles)
+```
+dependencyResolutionManagement {        
+        repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+        repositories {
+            mavenCentral()
+            maven { url = uri("https://jitpack.io") }
+        }
+    }
+```
+Step 2. Add the dependency
+```
+dependencies {
+            implementation("com.github.lordtao:android-tao-bubbles:latestVersion")
+    }
+```
+
 [Licence](https://opensource.org/license/mit)
 
-<p align="center"><img src="media/Demo.gif" alt="drawing" width="420"/></p>
+<p align="center"><img src="media/Demo.gif" alt="drawing" data-align="center"/></p>
 
 **Example Usage (Single Bubble):**
 

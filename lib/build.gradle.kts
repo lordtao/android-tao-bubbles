@@ -4,7 +4,10 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    `maven-publish`
 }
+
+val libName = "taobubbles"
 
 val skipCommitsCount = 0
 val versionMajor = 1
@@ -25,7 +28,7 @@ fun TaskContainer.registerCopyAarTask(variant: String) {
         group = "aar"
         description = "Удаляет ранее собранные AAR в ../aar для $variant"
         delete(fileTree("../aar") {
-            include("taobubbles-$variant-*.aar")
+            include("$libName-$variant*.aar")
         })
     }
 
@@ -34,25 +37,25 @@ fun TaskContainer.registerCopyAarTask(variant: String) {
         description = "Copy AAR $variant with version $versionName to ../aar"
         dependsOn("assemble${capVariant}")
         dependsOn("deleteOld${capVariant}Aar")
-        val aarFile = file("build/outputs/aar/taobubbles-$versionName-$variant.aar")
+        val aarFile = file("build/outputs/aar/$libName-$versionName-$variant.aar")
         doFirst {
             // Создать ../aar если не существует
             file("../aar").mkdirs()
             if (!aarFile.exists()) {
                 throw GradleException("AAR file does not exist: $aarFile")
             }
-            println("Copying $aarFile to ../aar/taobubbles-$variant.aar")
+            println("Copying $aarFile to ../aar/$libName-$variant.aar")
         }
         from(aarFile)
         into("../aar")
-        if(variant == "release") {
-            rename { "taobubbles.aar" }
+        if (variant == "release") {
+            rename { "$libName.aar" }
         } else {
-            rename { "taobubbles-$variant.aar" }
+            rename { "$libName-$variant.aar" }
         }
         doLast {
             val versionFile = file("../aar/README.txt")
-            versionFile.writeText("Library: taobubbles\nVersion: $versionName\nCreated: ${Date()}")
+            versionFile.writeText("Library: $libName\nVersion: $versionName\nCreated: ${Date()}")
             println("Created version file: ${versionFile.absolutePath}")
         }
     }
@@ -90,6 +93,13 @@ android {
     buildFeatures {
         compose = true
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 kotlin {
@@ -97,8 +107,6 @@ kotlin {
 }
 
 dependencies {
-    debugImplementation(mapOf("name" to "taocore-debug", "ext" to "aar"))
-    releaseImplementation(mapOf("name" to "taocore", "ext" to "aar"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -111,7 +119,7 @@ dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
-    
+
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -119,6 +127,8 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.constraint.layout)
+
+    implementation(libs.tao.core)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -138,5 +148,57 @@ afterEvaluate {
     tasks.named("build").configure {
         dependsOn("copyReleaseAar")
         dependsOn("copyDebugAar")
+    }
+}
+
+// Publishing
+
+val repo = "android-tao-bubbles"
+val repoDescription = "Tiny, lightweight and informative logger for Android."
+
+val owner = "lordtao"
+val libGroupId = "ua.at.tsvetkov"
+val libArtifactId = libName
+val libVersionName = versionName
+
+val licenseName = "The MIT License"
+val licenseUrl = "https://opensource.org/licenses/MIT"
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                groupId = libGroupId
+                artifactId = libArtifactId
+                version = libVersionName
+
+                from(components.getByName("release"))
+
+                pom {
+                    name.set(libArtifactId) // Или более описательное имя
+                    description.set(repoDescription)
+                    url.set("https://github.com/$owner/$repo") // URL of your project
+
+                    licenses {
+                        license {
+                            name.set(licenseName)
+                            url.set(licenseUrl)
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set(owner)
+                            name.set("Alexandr Tsvetkov")
+                            email.set("tsvetkov2010@gmail.com")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git://github.com/$owner/$repo.git")
+                        developerConnection.set("scm:git:ssh://github.com/$owner/$repo.git")
+                        url.set("https://github.com/$owner/$repo")
+                    }
+                }
+            }
+        }
     }
 }

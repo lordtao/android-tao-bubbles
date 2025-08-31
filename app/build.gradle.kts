@@ -40,9 +40,10 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":lib"))
 
-    debugImplementation(mapOf("name" to "taocore-debug", "ext" to "aar"))
-    releaseImplementation(mapOf("name" to "taocore", "ext" to "aar"))
+//    debugImplementation(mapOf("name" to "taocore-debug", "ext" to "aar"))
+//    releaseImplementation(mapOf("name" to "taocore", "ext" to "aar"))
 
+    implementation("com.github.lordtao:android-tao-core:v1.6.124")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
