@@ -70,7 +70,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        setProperty("archivesBaseName", "taobubbles-$versionName")
+        setProperty("archivesBaseName", "$libName-$versionName")
     }
     buildTypes {
         getByName("debug") {
