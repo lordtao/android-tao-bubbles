@@ -8,13 +8,15 @@ agp = "8.12.2"
 kotlin = "2.2.10"
 coreKtx = "1.17.0"
 lifecycleRuntimeKtx = "2.9.3"
+appcompat = "1.7.1"
+constraintlayout = "2.2.1"
+cardview = "1.0.0"
+
 lifecycleRuntimeCompose= "2.9.3"
 lifecycleViewmodelCompose= "2.9.3"
 activityCompose = "1.10.1"
 composeBom = "2025.08.01"
-appcompat = "1.7.1"
-constraintlayout = "2.2.1"
-cardview = "1.0.0"
+
 taoCore = "1.6.126"
 
 junit = "4.13.2"
@@ -25,13 +27,13 @@ espressoCore = "3.7.0"
 # Core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-lifecycle-runtime-compose={ group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose"}
-androidx-lifecycle-viewmodel-compose={ group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose"}
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-constraint-layout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
-
+# Core compose
+androidx-lifecycle-runtime-compose={ group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose"}
+androidx-lifecycle-viewmodel-compose={ group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose"}
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 # Compose
 # androidx-compose-constraint-layout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "composeConstraintLayout"}
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }

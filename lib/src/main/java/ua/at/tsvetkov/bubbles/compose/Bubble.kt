@@ -79,7 +79,7 @@ private class BubbleShape(
     private val cornerRadius: Dp,
 ) : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val path = Path() // android.graphics.Path
+        val path = Path()
 
         val arrowWidthPx = with(density) { arrowWidth.toPx() }
         val arrowHeightPx = with(density) { arrowHeight.toPx() }
@@ -121,13 +121,13 @@ private class BubbleShape(
             }
         }
 
-        // Bubble body
+        // Рисовать пузырь
         path.addRoundRect(
             bubbleRectLeft, bubbleRectTop, bubbleRectRight, bubbleRectBottom,
             cornerRadiusPx, cornerRadiusPx, Path.Direction.CW
         )
 
-        // Draw arrow
+        // Рисовать стрелку
         when (arrowPosition) {
             ArrowPosition.LEFT -> {
                 path.moveTo(bubbleRectRight, arrowOffsetPx - arrowWidthPx / 2) // Верхняя точка основания стрелки
@@ -184,7 +184,7 @@ fun Bubble(
         scrimColor = bubbleData.settings.scrimColor,
         dismissOnScrimClick = bubbleData.settings.dismissOnScrimClick,
         onDismissRequest = { controller.showNext() },
-        onStopShowRequest = { controller.stopShow() }, // Added
+        onStopShowRequest = { controller.stopShow() },
         arrowTargetOffset = bubbleData.settings.arrowTargetOffset,
         enterAnimationDurationMs = bubbleData.settings.enterAnimationDurationMs,
         exitAnimationDurationMs = bubbleData.settings.exitAnimationDurationMs,
@@ -374,10 +374,7 @@ fun Bubble(
                 val statusBarHeightPx = WindowInsets.statusBars.getTop(density)
                 val navigationBarsHeightPx = WindowInsets.navigationBars.getBottom(density)
 
-                // SubcomposeLayout for measuring and positioning the bubble itself
                 SubcomposeLayout(modifier = Modifier.fillMaxSize()) { constraints ->
-                    // density, windowInfo, screenWidth (Dp), screenHeight (Dp) уже определены
-                    // statusBarHeightPx, navigationBarsHeightPx определены
 
                     val cornerRadiusPx = with(density) { cornerRadius.toPx() }
                     val arrowLengthPx = with(density) { arrowHeight.toPx() } // Dp значение arrowHeight используется как длина стрелки
@@ -390,27 +387,26 @@ fun Bubble(
                     val maxBubbleAreaOnScreenWidthPx = constraints.maxWidth - 2 * hScreenPaddingPx // For TOP/BOTTOM arrows
                     val maxBubbleAreaOnScreenHeightPx = constraints.maxHeight - 2 * vScreenPaddingPx
 
-                    // Максимальная ширина, которую может занять *весь пузырь*
+                    // Максимальная ширина всего пузыря
                     val finalMaxBubbleFullWidthPx = when (arrowPosition) {
                         ArrowPosition.LEFT -> (targetComponentRect.left - hScreenPaddingPx).coerceAtLeast(0f)
                         ArrowPosition.RIGHT -> (constraints.maxWidth - targetComponentRect.right - hScreenPaddingPx).coerceAtLeast(0f)
                         else -> maxBubbleAreaOnScreenWidthPx // For TOP and BOTTOM
                     }
-                    // Максимальная высота, которую может занять *весь пузырь*
-                    val finalMaxBubbleFullHeightPx = maxBubbleAreaOnScreenHeightPx // This remains generally applicable
+                    // Максимальная высота всего пузыря
+                    val finalMaxBubbleFullHeightPx = maxBubbleAreaOnScreenHeightPx
 
-                    // Определяем внутренние отступы в границах пузыря, занимаемые не-контентными элементами (углы, тело стрелки)
-                    // Это используется для определения пространства для самого контента.
+                    // Внутренние отступы в границах пузыря (углы, тело стрелки)
                     val horizontalPaddingInsideBubbleForContentCalc = when (arrowPosition) {
                         ArrowPosition.LEFT, ArrowPosition.RIGHT -> 2 * cornerRadiusPx + arrowLengthPx
-                        else -> 2 * cornerRadiusPx // Стрелка сверху/снизу вертикальна, не занимает горизонтальное пространство у тела
+                        else -> 2 * cornerRadiusPx // Стрелка сверху/снизу вертикальна
                     }
                     val verticalPaddingInsideBubbleForContentCalc = when (arrowPosition) {
                         ArrowPosition.TOP, ArrowPosition.BOTTOM -> 2 * cornerRadiusPx + arrowLengthPx
                         else -> 2 * cornerRadiusPx // Стрелка слева/справа горизонтальна
                     }
 
-                    // Максимальные размеры для самого контента
+                    // Максимальные размеры содержимого
                     val contentMeasureMaxWidthPx = (finalMaxBubbleFullWidthPx - horizontalPaddingInsideBubbleForContentCalc).coerceAtLeast(0f)
                     val contentMeasureMaxHeightPx = (finalMaxBubbleFullHeightPx - verticalPaddingInsideBubbleForContentCalc).coerceAtLeast(0f)
 
@@ -431,7 +427,7 @@ fun Bubble(
                     val bubbleBodyWidthPx = measuredContentWidthPx + 2 * cornerRadiusPx
                     val bubbleBodyHeightPx = measuredContentHeightPx + 2 * cornerRadiusPx
 
-                    // Рассчитываем финальные размеры пузыря, убеждаясь, что они не превышают вычисленные максимумы
+                    // Финальные размеры пузыря, убеждаясь, что они не превышают вычисленные максимумы
                     val actualBubbleFullWidthPx = (when (arrowPosition) {
                         ArrowPosition.LEFT, ArrowPosition.RIGHT -> bubbleBodyWidthPx + arrowLengthPx
                         else -> bubbleBodyWidthPx // Для TOP/BOTTOM, длина стрелки вертикальна
@@ -442,8 +438,6 @@ fun Bubble(
                         else -> bubbleBodyHeightPx // Для LEFT/RIGHT, длина стрелки горизонтальна
                     }).coerceAtMost(finalMaxBubbleFullHeightPx)
 
-                    // Сохраняем старые имена переменных для совместимости с остальным кодом,
-                    // если они используются для создания Dp версий.
                     val constrainedBubbleFullWidthPx = actualBubbleFullWidthPx
                     val constrainedBubbleFullHeightPx = actualBubbleFullHeightPx
 
@@ -575,7 +569,6 @@ fun Bubble(
                                                     }
                                                 }
 
-                                                // Ensure the resulting rect has a positive width and height
                                                 if (seamRect.width > 0f && seamRect.height > 0f) {
                                                     val maskPath = ComposePath()
 
@@ -716,8 +709,8 @@ fun BubblePreviewScreen() {
         Bubble(
             settings = commonSettings.copy(
                 backgroundColor = Color(0xFF29B6F6).copy(alpha = 0.8f),
-                bubbleBorderColor = Color.Black, // Example of border
-                bubbleBorderWidth = 1.dp      // Example of border
+                bubbleBorderColor = Color.Black,
+                bubbleBorderWidth = 1.dp
             ),
             bubbleData = BubbleData(
                 id = "TopStart",
@@ -752,8 +745,8 @@ fun BubblePreviewScreen() {
         Bubble(
             settings = commonSettings.copy(
                 backgroundColor = Color(0xFFFFB74D).copy(alpha = 0.8f),
-                bubbleBorderColor = Color.Black, // Example of border
-                bubbleBorderWidth = 1.dp      // Example of border
+                bubbleBorderColor = Color.Black,
+                bubbleBorderWidth = 1.dp
             ),
             bubbleData = BubbleData(
                 id = "TopEnd",
@@ -787,8 +780,8 @@ fun BubblePreviewScreen() {
         Bubble(
             settings = commonSettings.copy(
                 backgroundColor = Color(0xFFFFA726).copy(alpha = 0.8f),
-                bubbleBorderColor = Color.Black, // Example of border
-                bubbleBorderWidth = 1.dp      // Example of border
+                bubbleBorderColor = Color.Black,
+                bubbleBorderWidth = 1.dp
             ),
             bubbleData = BubbleData(
                 id = "bubble3",
@@ -822,8 +815,8 @@ fun BubblePreviewScreen() {
         Bubble(
             settings = commonSettings.copy(
                 backgroundColor = Color(0xFF00ACC1).copy(alpha = 0.8f),
-                bubbleBorderColor = Color.Black, // Example of border
-                bubbleBorderWidth = 1.dp      // Example of border
+                bubbleBorderColor = Color.Black,
+                bubbleBorderWidth = 1.dp
             ),
             bubbleData = BubbleData(
                 id = "bubble4",
@@ -856,13 +849,13 @@ fun BubblePreviewScreen() {
         Bubble(
             settings = commonSettings.copy(
                 backgroundColor = Color(0xFF0277BD).copy(alpha = 0.8f),
-                bubbleBorderColor = Color(0xFF025C91), // Example of border
-                bubbleBorderWidth = 2.dp      // Example of border
+                bubbleBorderColor = Color(0xFF025C91),
+                bubbleBorderWidth = 2.dp
             ),
             bubbleData = BubbleData(
                 id = "bubbleCenter",
                 arrowPosition = ArrowPosition.BOTTOM,
-                content = { onDismissClick, onStopShowRequest -> // Already correct in preview
+                content = { onDismissClick, onStopShowRequest ->
                     Text(
                         "Bubble Center with Border", color = Color.White, modifier = Modifier
                             .padding(8.dp)

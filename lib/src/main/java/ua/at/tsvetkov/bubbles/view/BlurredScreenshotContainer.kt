@@ -22,16 +22,15 @@ import androidx.core.graphics.createBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-// Вспомогательная функция для захвата и размытия конкретного View
-// (Эта функция остается такой же, как в предыдущем вашем варианте)
+
+// В работе. In Progress...
+
+// Вспомогательная функция для захвата и размытия конкретного View.
 private suspend fun captureAndBlurActualView(context: Context, view: View, blurRadius: Float): Bitmap? {
     return withContext(Dispatchers.Default) {
         try {
             val screenshot = createBitmap(view.width.coerceAtLeast(1), view.height.coerceAtLeast(1))
             val canvas = Canvas(screenshot)
-            // Важно: для захвата всего окна, включая диалоги и всплывающие окна поверх Activity,
-            // может потребоваться более сложный подход или дополнительные разрешения (например, MediaProjection API).
-            // view.draw(canvas) захватит содержимое этого конкретного View (в данном случае, rootView Activity).
             view.draw(canvas)
 
             val outputBitmap = Bitmap.createBitmap(screenshot)
@@ -69,7 +68,7 @@ fun captureAndBlurScreen(
     blurRadius: Float,
     callback: (ImageView?) -> Unit,
 ) {
-    // Шаг 1: Захват скриншота с помощью PixelCopy
+    // Захват скриншота с помощью PixelCopy
     val bitmap = createBitmap(viewToCapture.width, viewToCapture.height)
     val location = IntArray(2)
     viewToCapture.getLocationInWindow(location)
@@ -80,7 +79,7 @@ fun captureAndBlurScreen(
         bitmap,
         { copyResult ->
             if (copyResult == PixelCopy.SUCCESS) {
-                // Шаг 2: Создание ImageView и добавление его в иерархию View
+                // Создание ImageView и добавление его в иерархию View
                 val blurredImageView = ImageView(context)
                 blurredImageView.setImageBitmap(bitmap)
                 blurredImageView.layoutParams = ViewGroup.LayoutParams(
@@ -92,7 +91,7 @@ fun captureAndBlurScreen(
                 val rootView = viewToCapture.rootView as ViewGroup
                 rootView.addView(blurredImageView)
 
-                // Шаг 3: Применение размытия (только для Android 12+)
+                // Применение размытия (только для Android 12+)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     val blurEffect = RenderEffect.createBlurEffect(blurRadius, blurRadius, Shader.TileMode.CLAMP)
                     blurredImageView.setRenderEffect(blurEffect)
