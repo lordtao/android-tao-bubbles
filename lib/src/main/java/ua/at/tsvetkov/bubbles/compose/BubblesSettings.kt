@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
  * @property arrowHeight The height (or length) of the bubble's arrow.
  * @property cornerRadius The corner radius for the bubble's body.
  * @property arrowTargetOffset An offset applied to the arrow's position along the axis of the target component's side.
- *                             For example, for [ArrowPosition.LEFT], this will shift the bubble vertically along the left edge of the target.
+ * For example, for [ArrowPosition.LEFT], this will shift the bubble vertically along the left edge of the target.
  * @property backgroundColor The background color of the bubble.
  * @property bubbleBorderColor The color of the bubble's border.
  * @property bubbleBorderWidth The width of the bubble's border.
@@ -40,7 +40,7 @@ data class BubblesSettings(
     val scrimColor: Color = DEFAULT_SCRIM_COLOR,
     val dismissOnScrimClick: Boolean = false,
     val enterAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS,
-    val exitAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS,
+    val exitAnimationDurationMs: Int = DEFAULT_ANIMATION_DURATION_MS
 ) {
     companion object {
         /** Default width of the bubble's arrow. */
