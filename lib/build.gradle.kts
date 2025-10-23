@@ -20,22 +20,24 @@ val versionPatch = providers
     .trim()
     .toInt()
 
-val versionName = "${versionMajor}.${versionMinor}.${versionPatch - skipCommitsCount}"
+val versionName = "$versionMajor.$versionMinor.${versionPatch - skipCommitsCount}"
 
 fun TaskContainer.registerCopyAarTask(variant: String) {
     val capVariant = variant.replaceFirstChar { it.uppercaseChar() }
     register<Delete>("deleteOld${capVariant}Aar") {
         group = "aar"
         description = "Удаляет ранее собранные AAR в ../aar для $variant"
-        delete(fileTree("../aar") {
-            include("$libName-$variant*.aar")
-        })
+        delete(
+            fileTree("../aar") {
+                include("$libName-$variant*.aar")
+            }
+        )
     }
 
     register<Copy>("copy${capVariant}Aar") {
         group = "aar"
         description = "Copy AAR $variant with version $versionName to ../aar"
-        dependsOn("assemble${capVariant}")
+        dependsOn("assemble$capVariant")
         dependsOn("deleteOld${capVariant}Aar")
         val aarFile = file("build/outputs/aar/$libName-$versionName-$variant.aar")
         doFirst {
@@ -154,7 +156,8 @@ afterEvaluate {
 // Publishing
 
 val repo = "android-tao-bubbles"
-val repoDescription = "A lightweight Jetpack Compose library for displaying customizable \"bubbles\", \"showcases\" or \"tooltips\" that can point to specific UI elements."
+val repoDescription = "A lightweight Jetpack Compose library for displaying customizable \"bubbles\", \"showcases\" " +
+    "or \"tooltips\" that can point to specific UI elements."
 
 val owner = "lordtao"
 val libGroupId = "ua.at.tsvetkov"

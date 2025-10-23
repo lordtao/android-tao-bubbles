@@ -22,12 +22,11 @@ import androidx.core.graphics.createBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-
 // В работе. In Progress...
 
 // Вспомогательная функция для захвата и размытия конкретного View.
-private suspend fun captureAndBlurActualView(context: Context, view: View, blurRadius: Float): Bitmap? {
-    return withContext(Dispatchers.Default) {
+private suspend fun captureAndBlurActualView(context: Context, view: View, blurRadius: Float): Bitmap? =
+    withContext(Dispatchers.Default) {
         try {
             val screenshot = createBitmap(view.width.coerceAtLeast(1), view.height.coerceAtLeast(1))
             val canvas = Canvas(screenshot)
@@ -59,14 +58,13 @@ private suspend fun captureAndBlurActualView(context: Context, view: View, blurR
             null
         }
     }
-}
 
 fun captureAndBlurScreen(
     window: Window,
     context: Context,
     viewToCapture: View,
     blurRadius: Float,
-    callback: (ImageView?) -> Unit,
+    callback: (ImageView?) -> Unit
 ) {
     // Захват скриншота с помощью PixelCopy
     val bitmap = createBitmap(viewToCapture.width, viewToCapture.height)
@@ -82,10 +80,11 @@ fun captureAndBlurScreen(
                 // Создание ImageView и добавление его в иерархию View
                 val blurredImageView = ImageView(context)
                 blurredImageView.setImageBitmap(bitmap)
-                blurredImageView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
+                blurredImageView.layoutParams =
+                    ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
 
                 // Добавление ImageView как верхнего слоя
                 val rootView = viewToCapture.rootView as ViewGroup
@@ -105,4 +104,3 @@ fun captureAndBlurScreen(
         Handler(Looper.getMainLooper())
     )
 }
-
