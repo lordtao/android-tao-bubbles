@@ -44,14 +44,8 @@ import kotlin.math.roundToInt
  * Internal class for BubbleShowControllerExtended
  */
 @Composable
-fun Bubble(
-    modifier: Modifier = Modifier,
-    controller: BubbleShowControllerExtended,
-    bubbleData: BubbleDataExtended,
-    isVisible: Boolean = true
-) {
+fun Bubble(controller: BubbleShowControllerExtended, bubbleData: BubbleDataExtended, isVisible: Boolean = true) {
     Bubble(
-        modifier = modifier,
         id = bubbleData.getId(),
         targetComponentRect = controller.currentTargetRect,
         arrowPosition = bubbleData.data.arrowPosition,
@@ -80,15 +74,13 @@ fun Bubble(
  * This overload simplifies showing bubbles in a sequence or controlled manner,
  * deriving most settings and state from the controller.
  *
- * @param modifier Modifier for this composable.
  * @param controller The [BubbleShowController] managing this bubble's display and behavior.
  * @param bubbleData The [BubbleData] containing specific content and arrow position for this bubble.
  * @param isVisible Controls the visibility of the bubble. Typically managed by the controller.
  */
 @Composable
-fun Bubble(modifier: Modifier = Modifier, controller: BubbleShowController, bubbleData: BubbleData, isVisible: Boolean = true) {
+fun Bubble(controller: BubbleShowController, bubbleData: BubbleData, isVisible: Boolean = true) {
     Bubble(
-        modifier = modifier,
         id = bubbleData.id,
         targetComponentRect = controller.currentTargetRect,
         arrowPosition = bubbleData.arrowPosition,
@@ -117,7 +109,6 @@ fun Bubble(modifier: Modifier = Modifier, controller: BubbleShowController, bubb
  * This overload provides fine-grained control over a single bubble's appearance and behavior
  * when not using a [BubbleShowController].
  *
- * @param modifier Modifier for this composable.
  * @param settings The [BubblesSettings] to configure the bubble's appearance and animations.
  * @param bubbleData The [BubbleData] containing the unique ID, content, and arrow position.
  * @param targetComponentRect The [Rect] of the target component this bubble is pointing to. If null, the bubble is not shown.
@@ -127,7 +118,6 @@ fun Bubble(modifier: Modifier = Modifier, controller: BubbleShowController, bubb
  */
 @Composable
 fun Bubble(
-    modifier: Modifier = Modifier,
     settings: BubblesSettings = BubblesSettings(),
     bubbleData: BubbleData,
     targetComponentRect: Rect?,
@@ -136,7 +126,6 @@ fun Bubble(
     isVisible: Boolean = true
 ) {
     Bubble(
-        modifier = modifier,
         id = bubbleData.id,
         targetComponentRect = targetComponentRect,
         arrowPosition = bubbleData.arrowPosition,
@@ -167,7 +156,6 @@ fun Bubble(
  *
  * The bubble's appearance and behavior are highly configurable.
  *
- * @param modifier Modifier for this composable.
  * @param id A unique identifier for the bubble, used for transition state.
  * @param targetComponentRect The [Rect] of the target component this bubble is pointing to. If null, the bubble is not shown.
  * @param arrowPosition The side of the bubble where the arrow should appear.
@@ -194,7 +182,6 @@ fun Bubble(
  */
 @Composable
 fun Bubble(
-    modifier: Modifier = Modifier,
     id: String,
     targetComponentRect: Rect?,
     arrowPosition: ArrowPosition,
@@ -225,7 +212,7 @@ fun Bubble(
 
     if (showScrim) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .background(scrimColor)
                 .clickable(enabled = dismissOnScrimClick) {

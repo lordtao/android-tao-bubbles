@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -86,8 +85,7 @@ fun BubblePreview() {
                 }
             ),
             targetComponentRect = targetRectTopLeft,
-            isVisible = true,
-            modifier = Modifier.heightIn(max = 100.dp)
+            isVisible = true
             // onStopShowRequestCallback will use its default {} for previews if not explicitly passed
         )
 
@@ -126,8 +124,7 @@ fun BubblePreview() {
                 }
             ),
             targetComponentRect = targetRectTopRight,
-            isVisible = true,
-            modifier = Modifier.heightIn(max = 100.dp)
+            isVisible = true
         )
 
         Box(
@@ -165,8 +162,7 @@ fun BubblePreview() {
                 }
             ),
             targetComponentRect = targetRectBottomLeft,
-            isVisible = true,
-            modifier = Modifier.heightIn(max = 100.dp)
+            isVisible = true
         )
 
         Box(
@@ -189,7 +185,7 @@ fun BubblePreview() {
                 bubbleBorderColor = Color.Black,
                 bubbleBorderWidth = 1.dp,
                 arrowHeight = 40.dp,
-                arrowWidth = 40.dp,
+                arrowWidth = 40.dp
             ),
             bubbleData = BubbleData(
                 id = "bubble4",
@@ -206,8 +202,7 @@ fun BubblePreview() {
                 }
             ),
             targetComponentRect = targetRectBottomRight,
-            isVisible = true,
-            modifier = Modifier.heightIn(max = 100.dp)
+            isVisible = true
         )
 
         Box(
@@ -246,8 +241,7 @@ fun BubblePreview() {
             ),
             targetComponentRect = targetRectCenter,
             onDismissRequest = { isCentralBubbleVisible = false },
-            isVisible = isCentralBubbleVisible,
-            modifier = Modifier.heightIn(max = 100.dp)
+            isVisible = isCentralBubbleVisible
         )
     }
 }

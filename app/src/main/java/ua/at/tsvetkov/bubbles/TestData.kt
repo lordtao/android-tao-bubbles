@@ -23,12 +23,12 @@ import ua.at.tsvetkov.bubbles.ui.theme.Purple40
 /**
  * Created by Alexandr Tsvetkov on 10.08.2025.
  */
-
+@Suppress("MagicNumber")
 val testSettings = BubblesSettings(
     scrimColor = Color(0x22002EFF),
     backgroundColor = OrangeVeryLight,
     bubbleBorderColor = Color.Black,
-    bubbleBorderWidth = 2.dp,
+    bubbleBorderWidth = 2.dp
 )
 
 val testBubbles = listOf(
@@ -48,7 +48,7 @@ val testBubbles = listOf(
     ),
     BubbleData(
         id = "Bubble 3",
-        arrowPosition = ArrowPosition.RIGHT,
+        arrowPosition = ArrowPosition.TOP,
         content = { onDismissClick, onStopShowRequest ->
             MyContent("Bubble 3", onDismissClick, onStopShowRequest)
         }
@@ -65,7 +65,7 @@ val testBubbles = listOf(
         content = { onDismissClick, onStopShowRequest ->
             MyContent("Bubble 5", onDismissClick, onStopShowRequest)
         }
-    ),
+    )
 )
 
 @Composable
@@ -73,31 +73,30 @@ private fun MyContent(title: String, onDismissClick: () -> Unit, onStopShowReque
     Column(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
     ) {
         Text(title, color = Purple40, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Example of bubble help. You can insert your Composable object instead. This is just an example. Text can be multiline.", color = Color.Black)
+        Text(
+            "Example of bubble help. You can insert your Composable object instead. This is just an example. Text can be multiline.",
+            color = Color.Black
+        )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(
-                onClick = {
-                    onStopShowRequest() // Call onStopShowRequest
-                }) {
+            Button(onClick = {
+                onStopShowRequest() // Call onStopShowRequest
+            }) {
                 Text("Stop Show", color = Color.White)
             }
             Spacer(Modifier.weight(1f))
-            Button(
-                onClick = {
-                    onDismissClick() // Call onDismissClick for "Next"
-                }) {
+            Button(onClick = {
+                onDismissClick() // Call onDismissClick for "Next"
+            }) {
                 Text("Next", color = Color.White)
             }
         }
     }
 }
-
-
