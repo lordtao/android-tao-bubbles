@@ -3,7 +3,6 @@ package ua.at.tsvetkov.bubbles.compose
 /**
  * Created by Alexandr Tsvetkov on 28.07.2025.
  */
-import android.graphics.Path
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -36,16 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path as ComposePath
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.graphics.withSave
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -54,133 +46,9 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
-
-/**
- * A [Shape] implementation for drawing a bubble with an arrow.
- * The shape consists of a rectangular body with rounded corners and a triangular arrow
- * attached to one of its sides.
- *
- * @param arrowPosition Specifies which side of the bubble body the arrow will be on ([ArrowPosition.LEFT],
- * [ArrowPosition.RIGHT], [ArrowPosition.TOP], [ArrowPosition.BOTTOM]).
- * @param arrowOffset The offset of the arrow's base center from the center of the corresponding side
- * of the bubble body.
- * For [ArrowPosition.TOP] and [ArrowPosition.BOTTOM], this is a horizontal offset.
- * For [ArrowPosition.LEFT] and [ArrowPosition.RIGHT], this is a vertical offset.
- * @param arrowWidth The width of the arrow's base.
- * @param arrowHeight The length (height) of the arrow from its base to its tip.
- * @param cornerRadius The corner radius for the bubble body.
- */
-private class BubbleShape(
-    private val arrowPosition: ArrowPosition,
-    private val arrowOffset: Dp,
-    private val arrowWidth: Dp,
-    private val arrowHeight: Dp,
-    private val cornerRadius: Dp
-) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val path = Path()
-
-        val arrowWidthPx = with(density) { arrowWidth.toPx() }
-        val arrowHeightPx = with(density) { arrowHeight.toPx() }
-        val arrowOffsetPx = with(density) { arrowOffset.toPx() }
-        val cornerRadiusPx = with(density) { cornerRadius.toPx() }
-
-        val bubbleRectLeft: Float
-        val bubbleRectTop: Float
-        val bubbleRectRight: Float
-        val bubbleRectBottom: Float
-
-        when (arrowPosition) {
-            ArrowPosition.LEFT -> {
-                bubbleRectLeft = 0f
-                bubbleRectTop = 0f
-                bubbleRectRight = size.width - arrowHeightPx
-                bubbleRectBottom = size.height
-            }
-
-            ArrowPosition.RIGHT -> {
-                bubbleRectLeft = arrowHeightPx
-                bubbleRectTop = 0f
-                bubbleRectRight = size.width
-                bubbleRectBottom = size.height
-            }
-
-            ArrowPosition.TOP -> {
-                bubbleRectLeft = 0f
-                bubbleRectTop = 0f
-                bubbleRectRight = size.width
-                bubbleRectBottom = size.height - arrowHeightPx
-            }
-
-            ArrowPosition.BOTTOM -> {
-                bubbleRectLeft = 0f
-                bubbleRectTop = arrowHeightPx
-                bubbleRectRight = size.width
-                bubbleRectBottom = size.height
-            }
-        }
-
-        // Рисовать пузырь
-        path.addRoundRect(
-            bubbleRectLeft,
-            bubbleRectTop,
-            bubbleRectRight,
-            bubbleRectBottom,
-            cornerRadiusPx,
-            cornerRadiusPx,
-            Path.Direction.CW
-        )
-
-        // Рисовать стрелку
-        when (arrowPosition) {
-            ArrowPosition.LEFT -> {
-                // Верхняя точка основания стрелки
-                path.moveTo(bubbleRectRight, arrowOffsetPx - arrowWidthPx / 2)
-                // Нижняя точка основания стрелки
-                path.lineTo(bubbleRectRight, arrowOffsetPx + arrowWidthPx / 2)
-                // Кончик стрелки (на правом краю общей формы)
-                path.lineTo(size.width, arrowOffsetPx)
-                path.close()
-            }
-
-            ArrowPosition.RIGHT -> {
-                // Нижняя точка основания стрелки (на левом краю тела пузыря)
-                path.moveTo(bubbleRectLeft, arrowOffsetPx + arrowWidthPx / 2)
-                // Верхняя точка основания стрелки
-                path.lineTo(bubbleRectLeft, arrowOffsetPx - arrowWidthPx / 2)
-                // Кончик стрелки (на левом краю общей формы)
-                path.lineTo(0f, arrowOffsetPx)
-                path.close()
-            }
-
-            ArrowPosition.TOP -> {
-                // Левая точка основания стрелки
-                path.moveTo(arrowOffsetPx - arrowWidthPx / 2, bubbleRectBottom)
-                // Правая точка основания стрелки
-                path.lineTo(arrowOffsetPx + arrowWidthPx / 2, bubbleRectBottom)
-                // Кончик стрелки (на нижнем краю общей формы)
-                path.lineTo(arrowOffsetPx, size.height)
-                path.close()
-            }
-
-            ArrowPosition.BOTTOM -> {
-                // Правая точка основания стрелки (на верхном краю тела пузыря)
-                path.moveTo(arrowOffsetPx + arrowWidthPx / 2, bubbleRectTop)
-                // Левая точка основания стрелки
-                path.lineTo(arrowOffsetPx - arrowWidthPx / 2, bubbleRectTop)
-                // Кончик стрелки (на верхнем краю общей формы)
-                path.lineTo(arrowOffsetPx, 0f)
-                path.close()
-            }
-        }
-        return Outline.Generic(path.asComposePath())
-    }
-}
 
 @Composable
 fun Bubble(
@@ -225,12 +93,7 @@ fun Bubble(
  * @param isVisible Controls the visibility of the bubble. Typically managed by the controller.
  */
 @Composable
-fun Bubble(
-    modifier: Modifier = Modifier,
-    controller: BubbleShowController,
-    bubbleData: BubbleData,
-    isVisible: Boolean = true
-) {
+fun Bubble(modifier: Modifier = Modifier, controller: BubbleShowController, bubbleData: BubbleData, isVisible: Boolean = true) {
     Bubble(
         modifier = modifier,
         id = bubbleData.id,
@@ -369,18 +232,16 @@ fun Bubble(
 
     if (showScrim) {
         Box(
-            modifier =
-            Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .background(scrimColor)
                 .clickable(enabled = dismissOnScrimClick) {
-                    onDismissRequest() // This dismisses the current bubble or triggers showNext via controller
+                    onDismissRequest()
                 }
         ) {
             AnimatedVisibility(
                 visibleState = bubbleTransitionState,
-                enter =
-                if (enterAnimationDurationMs == 0) {
+                enter = if (enterAnimationDurationMs == 0) {
                     EnterTransition.None
                 } else {
                     (
@@ -391,8 +252,7 @@ fun Bubble(
                             )
                         )
                 },
-                exit =
-                if (exitAnimationDurationMs == 0) {
+                exit = if (exitAnimationDurationMs == 0) {
                     ExitTransition.None
                 } else {
                     (
@@ -406,7 +266,7 @@ fun Bubble(
             ) {
                 val density = LocalDensity.current
                 val windowInfo = LocalWindowInfo.current
-                val screenWidth = with(density) { windowInfo.containerSize.width.toDp() }
+                // val screenWidth = with(density) { windowInfo.containerSize.width.toDp() }
                 val screenHeight = with(density) { windowInfo.containerSize.height.toDp() }
 
                 val statusBarHeightPx = WindowInsets.statusBars.getTop(density)
@@ -415,7 +275,7 @@ fun Bubble(
                 SubcomposeLayout(modifier = Modifier.fillMaxSize()) { constraints ->
 
                     val cornerRadiusPx = with(density) { cornerRadius.toPx() }
-                    val arrowLengthPx = with(density) { arrowHeight.toPx() } // Dp значение arrowHeight используется как длина стрелки
+                    val arrowLengthPx = with(density) { arrowHeight.toPx() }
 
                     // Максимально доступная область для пузыря на экране, после учета экранных отступов
                     val hScreenPaddingPx = with(density) { horizontalScreenPadding.toPx() }
@@ -426,51 +286,44 @@ fun Bubble(
                     val maxBubbleAreaOnScreenHeightPx = constraints.maxHeight - 2 * vScreenPaddingPx
 
                     // Максимальная ширина всего пузыря
-                    val finalMaxBubbleFullWidthPx =
-                        when (arrowPosition) {
-                            ArrowPosition.LEFT -> (targetComponentRect.left - hScreenPaddingPx).coerceAtLeast(0f)
-                            ArrowPosition.RIGHT -> (constraints.maxWidth - targetComponentRect.right - hScreenPaddingPx).coerceAtLeast(
-                                0f
-                            )
-                            else -> maxBubbleAreaOnScreenWidthPx // For TOP and BOTTOM
-                        }
+                    val finalMaxBubbleFullWidthPx = when (arrowPosition) {
+                        ArrowPosition.LEFT -> (targetComponentRect.left - hScreenPaddingPx).coerceAtLeast(0f)
+                        ArrowPosition.RIGHT -> (constraints.maxWidth - targetComponentRect.right - hScreenPaddingPx).coerceAtLeast(
+                            0f
+                        )
+
+                        else -> maxBubbleAreaOnScreenWidthPx // For TOP and BOTTOM
+                    }
                     // Максимальная высота всего пузыря
                     val finalMaxBubbleFullHeightPx = maxBubbleAreaOnScreenHeightPx
 
                     // Внутренние отступы в границах пузыря (углы, тело стрелки)
-                    val horizontalPaddingInsideBubbleForContentCalc =
-                        when (arrowPosition) {
-                            ArrowPosition.LEFT, ArrowPosition.RIGHT -> 2 * cornerRadiusPx + arrowLengthPx
-                            else -> 2 * cornerRadiusPx // Стрелка сверху/снизу вертикальна
-                        }
-                    val verticalPaddingInsideBubbleForContentCalc =
-                        when (arrowPosition) {
-                            ArrowPosition.TOP, ArrowPosition.BOTTOM -> 2 * cornerRadiusPx + arrowLengthPx
-                            else -> 2 * cornerRadiusPx // Стрелка слева/справа горизонтальна
-                        }
+                    val horizontalPaddingInsideBubbleForContentCalc = when (arrowPosition) {
+                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> 2 * cornerRadiusPx + arrowLengthPx
+                        else -> 2 * cornerRadiusPx // Стрелка сверху/снизу вертикальна
+                    }
+                    val verticalPaddingInsideBubbleForContentCalc = when (arrowPosition) {
+                        ArrowPosition.TOP, ArrowPosition.BOTTOM -> 2 * cornerRadiusPx + arrowLengthPx
+                        else -> 2 * cornerRadiusPx // Стрелка слева/справа горизонтальна
+                    }
 
                     // Максимальные размеры содержимого
                     val contentMeasureMaxWidthPx =
-                        (finalMaxBubbleFullWidthPx - horizontalPaddingInsideBubbleForContentCalc).coerceAtLeast(
-                            0f
-                        )
+                        (finalMaxBubbleFullWidthPx - horizontalPaddingInsideBubbleForContentCalc).coerceAtLeast(0f)
                     val contentMeasureMaxHeightPx =
-                        (finalMaxBubbleFullHeightPx - verticalPaddingInsideBubbleForContentCalc).coerceAtLeast(
-                            0f
-                        )
+                        (finalMaxBubbleFullHeightPx - verticalPaddingInsideBubbleForContentCalc).coerceAtLeast(0f)
 
                     val contentMeasurable = subcompose("bubbleContent") {
                         content(onDismissRequest, onStopShowRequest)
                     }.first()
-                    val contentPlaceable =
-                        contentMeasurable.measure(
-                            Constraints(
-                                minWidth = 0,
-                                minHeight = 0,
-                                maxWidth = contentMeasureMaxWidthPx.roundToInt(),
-                                maxHeight = contentMeasureMaxHeightPx.roundToInt()
-                            )
+                    val contentPlaceable = contentMeasurable.measure(
+                        Constraints(
+                            minWidth = 0,
+                            minHeight = 0,
+                            maxWidth = contentMeasureMaxWidthPx.roundToInt(),
+                            maxHeight = contentMeasureMaxHeightPx.roundToInt()
                         )
+                    )
 
                     val measuredContentWidthPx = contentPlaceable.width.toFloat()
                     val measuredContentHeightPx = contentPlaceable.height.toFloat()
@@ -480,21 +333,19 @@ fun Bubble(
                     val bubbleBodyHeightPx = measuredContentHeightPx + 2 * cornerRadiusPx
 
                     // Финальные размеры пузыря, убеждаясь, что они не превышают вычисленные максимумы
-                    val actualBubbleFullWidthPx =
-                        (
-                            when (arrowPosition) {
-                                ArrowPosition.LEFT, ArrowPosition.RIGHT -> bubbleBodyWidthPx + arrowLengthPx
-                                else -> bubbleBodyWidthPx // Для TOP/BOTTOM, длина стрелки вертикальна
-                            }
-                            ).coerceAtMost(finalMaxBubbleFullWidthPx)
+                    val actualBubbleFullWidthPx = (
+                        when (arrowPosition) {
+                            ArrowPosition.LEFT, ArrowPosition.RIGHT -> bubbleBodyWidthPx + arrowLengthPx
+                            else -> bubbleBodyWidthPx // Для TOP/BOTTOM, длина стрелки вертикальна
+                        }
+                        ).coerceAtMost(finalMaxBubbleFullWidthPx)
 
-                    val actualBubbleFullHeightPx =
-                        (
-                            when (arrowPosition) {
-                                ArrowPosition.TOP, ArrowPosition.BOTTOM -> bubbleBodyHeightPx + arrowLengthPx
-                                else -> bubbleBodyHeightPx // Для LEFT/RIGHT, длина стрелки горизонтальна
-                            }
-                            ).coerceAtMost(finalMaxBubbleFullHeightPx)
+                    val actualBubbleFullHeightPx = (
+                        when (arrowPosition) {
+                            ArrowPosition.TOP, ArrowPosition.BOTTOM -> bubbleBodyHeightPx + arrowLengthPx
+                            else -> bubbleBodyHeightPx // Для LEFT/RIGHT, длина стрелки горизонтальна
+                        }
+                        ).coerceAtMost(finalMaxBubbleFullHeightPx)
 
                     val constrainedBubbleFullWidthPx = actualBubbleFullWidthPx
                     val constrainedBubbleFullHeightPx = actualBubbleFullHeightPx
@@ -505,49 +356,38 @@ fun Bubble(
                     val targetCenterX = targetComponentRect.center.x
                     val targetCenterYAdjusted = targetComponentRect.center.y - statusBarHeightPx
 
-                    val targetWidthPx = targetComponentRect.width
+                    // val targetWidthPx = targetComponentRect.width
                     val targetHeightPx = targetComponentRect.height
 
                     val arrowTargetOffsetPx = with(density) { arrowTargetOffset.toPx() }
 
-                    val desiredBubbleX =
-                        when (arrowPosition) {
-                            ArrowPosition.LEFT ->
-                                targetComponentRect.left - constrainedBubbleFullWidthPx +
-                                    arrowTargetOffsetPx // Adjusted: No targetWidth/2, points to the left edge
-                            ArrowPosition.RIGHT -> targetComponentRect.right + arrowTargetOffsetPx // Adjusted: No targetWidth/2
-                            ArrowPosition.TOP, ArrowPosition.BOTTOM ->
-                                targetCenterX -
-                                    (constrainedBubbleFullWidthPx / 2)
-                        }
+                    val desiredBubbleX = when (arrowPosition) {
+                        ArrowPosition.LEFT -> targetComponentRect.left - constrainedBubbleFullWidthPx + arrowTargetOffsetPx
+                        ArrowPosition.RIGHT -> targetComponentRect.right + arrowTargetOffsetPx
+                        ArrowPosition.TOP, ArrowPosition.BOTTOM -> targetCenterX - (constrainedBubbleFullWidthPx / 2)
+                    }
 
-                    val desiredBubbleY =
-                        when (arrowPosition) {
-                            ArrowPosition.TOP ->
-                                targetCenterYAdjusted - (targetHeightPx / 2) - constrainedBubbleFullHeightPx +
-                                    arrowTargetOffsetPx
-                            ArrowPosition.BOTTOM -> targetCenterYAdjusted + (targetHeightPx / 2) + arrowTargetOffsetPx
-                            ArrowPosition.LEFT, ArrowPosition.RIGHT ->
-                                targetCenterYAdjusted -
-                                    (constrainedBubbleFullHeightPx / 2)
-                        }
+                    val desiredBubbleY = when (arrowPosition) {
+                        ArrowPosition.TOP -> targetCenterYAdjusted - (targetHeightPx / 2) - constrainedBubbleFullHeightPx +
+                            arrowTargetOffsetPx
+
+                        ArrowPosition.BOTTOM -> targetCenterYAdjusted + (targetHeightPx / 2) + arrowTargetOffsetPx
+                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterYAdjusted - (constrainedBubbleFullHeightPx / 2)
+                    }
 
                     val minX = hScreenPaddingPx
                     val maxX = constraints.maxWidth - constrainedBubbleFullWidthPx - hScreenPaddingPx
                     val finalBubbleX = desiredBubbleX.coerceIn(minX, maxX)
 
                     val minY = with(density) { verticalScreenPadding.toPx() }
-                    val maxY =
-                        with(density) { screenHeight.toPx() } - constrainedBubbleFullHeightPx - navigationBarsHeightPx -
-                            statusBarHeightPx -
-                            minY
+                    val maxY = with(density) { screenHeight.toPx() }
+                    -constrainedBubbleFullHeightPx - navigationBarsHeightPx - statusBarHeightPx - minY
                     val finalBubbleY = desiredBubbleY.coerceIn(minY, maxY)
 
-                    val finalArrowOffsetPx =
-                        when (arrowPosition) {
-                            ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterYAdjusted - finalBubbleY
-                            ArrowPosition.TOP, ArrowPosition.BOTTOM -> targetCenterX - finalBubbleX
-                        }
+                    val finalArrowOffsetPx = when (arrowPosition) {
+                        ArrowPosition.LEFT, ArrowPosition.RIGHT -> targetCenterYAdjusted - finalBubbleY
+                        ArrowPosition.TOP, ArrowPosition.BOTTOM -> targetCenterX - finalBubbleX
+                    }
                     val finalArrowOffsetDp = with(density) { finalArrowOffsetPx.toDp() }
 
                     val bubbleCardPlaceable =
@@ -565,8 +405,7 @@ fun Bubble(
                             Card(
                                 shape = bubbleShape,
                                 colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                                modifier =
-                                Modifier
+                                modifier = Modifier
                                     .size(width = bubbleFullWidthDp, height = bubbleFullHeightDp)
                                     .drawBehind {
                                         val outline = bubbleShape.createOutline(size, layoutDirection, this)
@@ -578,138 +417,20 @@ fun Bubble(
                                                 path = fullPath,
                                                 color = backgroundColor
                                             )
-                                            // 2. Draw the border, but clip out the seam area to prevent artifacts.
+                                            // 2. Draw the border if desired.
                                             if (bubbleBorderWidth > 0.dp && bubbleBorderColor != Color.Transparent) {
-                                                // This logic to calculate the seam path is complex but correct.
-                                                val arrowHeightPx = arrowHeight.toPx()
-                                                val arrowWidthPx = arrowWidth.toPx()
                                                 val borderWidthPx = bubbleBorderWidth.toPx()
-                                                val currentArrowOffsetPx = finalArrowOffsetDp.toPx()
-                                                val maskExpansionPx = 1.dp.toPx()
-                                                val maskShiftPx = 0.75.dp.toPx()
-                                                val taperPx = 0.5.dp.toPx()
-
-                                                var seamRect: Rect? = null
-                                                val newMaskHalfThickness = (borderWidthPx / 2f) + maskExpansionPx
-
-                                                when (arrowPosition) {
-                                                    ArrowPosition.TOP -> {
-                                                        val yCenterOriginal = size.height - arrowHeightPx
-                                                        val yCenterShifted = yCenterOriginal - maskShiftPx
-                                                        val xInitialStart = currentArrowOffsetPx - arrowWidthPx / 2
-                                                        seamRect = Rect(
-                                                            left = xInitialStart + borderWidthPx,
-                                                            top = yCenterShifted - newMaskHalfThickness,
-                                                            right = xInitialStart + arrowWidthPx - borderWidthPx,
-                                                            bottom = yCenterShifted + newMaskHalfThickness
-                                                        )
-                                                    }
-
-                                                    ArrowPosition.BOTTOM -> {
-                                                        val yCenterOriginal = arrowHeightPx
-                                                        val yCenterShifted = yCenterOriginal + maskShiftPx
-                                                        val xInitialStart = currentArrowOffsetPx - arrowWidthPx / 2
-                                                        seamRect = Rect(
-                                                            left = xInitialStart + borderWidthPx,
-                                                            top = yCenterShifted - newMaskHalfThickness,
-                                                            right = xInitialStart + arrowWidthPx - borderWidthPx,
-                                                            bottom = yCenterShifted + newMaskHalfThickness
-                                                        )
-                                                    }
-
-                                                    ArrowPosition.LEFT -> {
-                                                        val xCenterOriginal = size.width - arrowHeightPx
-                                                        val xCenterShifted = xCenterOriginal - maskShiftPx
-                                                        val yInitialStart = currentArrowOffsetPx - arrowWidthPx / 2
-                                                        seamRect = Rect(
-                                                            left = xCenterShifted - newMaskHalfThickness,
-                                                            top = yInitialStart + borderWidthPx,
-                                                            right = xCenterShifted + newMaskHalfThickness,
-                                                            bottom = yInitialStart + arrowWidthPx - borderWidthPx
-                                                        )
-                                                    }
-
-                                                    ArrowPosition.RIGHT -> {
-                                                        val xCenterOriginal = arrowHeightPx
-                                                        val xCenterShifted = xCenterOriginal + maskShiftPx
-                                                        val yInitialStart = currentArrowOffsetPx - arrowWidthPx / 2
-                                                        seamRect = Rect(
-                                                            left = xCenterShifted - newMaskHalfThickness,
-                                                            top = yInitialStart + borderWidthPx,
-                                                            right = xCenterShifted + newMaskHalfThickness,
-                                                            bottom = yInitialStart + arrowWidthPx - borderWidthPx
-                                                        )
-                                                    }
-                                                }
-
-                                                val maskPath = ComposePath()
-                                                if (seamRect != null && seamRect.width > 0f && seamRect.height > 0f) {
-                                                    when (arrowPosition) {
-                                                        ArrowPosition.TOP -> {
-                                                            if (seamRect.width > 2 * taperPx) {
-                                                                maskPath.moveTo(seamRect.left, seamRect.bottom)
-                                                                maskPath.lineTo(seamRect.right, seamRect.bottom)
-                                                                maskPath.lineTo(seamRect.right - taperPx, seamRect.top)
-                                                                maskPath.lineTo(seamRect.left + taperPx, seamRect.top)
-                                                                maskPath.close()
-                                                            } else {
-                                                                maskPath.addRect(seamRect)
-                                                            }
-                                                        }
-
-                                                        ArrowPosition.BOTTOM -> {
-                                                            if (seamRect.width > 2 * taperPx) {
-                                                                maskPath.moveTo(seamRect.left, seamRect.top)
-                                                                maskPath.lineTo(seamRect.right, seamRect.top)
-                                                                maskPath.lineTo(seamRect.right - taperPx, seamRect.bottom)
-                                                                maskPath.lineTo(seamRect.left + taperPx, seamRect.bottom)
-                                                                maskPath.close()
-                                                            } else {
-                                                                maskPath.addRect(seamRect)
-                                                            }
-                                                        }
-
-                                                        ArrowPosition.LEFT -> {
-                                                            if (seamRect.height > 2 * taperPx) {
-                                                                maskPath.moveTo(seamRect.right, seamRect.top)
-                                                                maskPath.lineTo(seamRect.right, seamRect.bottom)
-                                                                maskPath.lineTo(seamRect.left, seamRect.bottom - taperPx)
-                                                                maskPath.lineTo(seamRect.left, seamRect.top + taperPx)
-                                                                maskPath.close()
-                                                            } else {
-                                                                maskPath.addRect(seamRect)
-                                                            }
-                                                        }
-
-                                                        ArrowPosition.RIGHT -> {
-                                                            if (seamRect.height > 2 * taperPx) {
-                                                                maskPath.moveTo(seamRect.left, seamRect.top)
-                                                                maskPath.lineTo(seamRect.left, seamRect.bottom)
-                                                                maskPath.lineTo(seamRect.right, seamRect.bottom - taperPx)
-                                                                maskPath.lineTo(seamRect.right, seamRect.top + taperPx)
-                                                                maskPath.close()
-                                                            } else {
-                                                                maskPath.addRect(seamRect)
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                // New clipping logic
-                                                drawContext.canvas.withSave {
-                                                    drawContext.canvas.clipPath(maskPath, clipOp = ClipOp.Difference)
-                                                    drawPath(
-                                                        path = fullPath,
-                                                        color = bubbleBorderColor,
-                                                        style = Stroke(width = borderWidthPx)
-                                                    )
-                                                }
+                                                drawPath(
+                                                    path = fullPath,
+                                                    color = bubbleBorderColor,
+                                                    style = Stroke(width = borderWidthPx)
+                                                )
                                             }
                                         }
                                     }
                             ) {
                                 Box(
-                                    modifier =
-                                    Modifier
+                                    modifier = Modifier
                                         .padding(
                                             when (arrowPosition) {
                                                 ArrowPosition.LEFT ->
@@ -720,6 +441,7 @@ fun Bubble(
                                                         arrowHeight + cornerRadius,
                                                         bottom = cornerRadius
                                                     )
+
                                                 ArrowPosition.RIGHT ->
                                                     PaddingValues(
                                                         start = arrowHeight + cornerRadius,
@@ -727,6 +449,7 @@ fun Bubble(
                                                         end = cornerRadius,
                                                         bottom = cornerRadius
                                                     )
+
                                                 ArrowPosition.TOP ->
                                                     PaddingValues(
                                                         start = cornerRadius,
@@ -735,6 +458,7 @@ fun Bubble(
                                                         bottom =
                                                         arrowHeight + cornerRadius
                                                     )
+
                                                 ArrowPosition.BOTTOM ->
                                                     PaddingValues(
                                                         start = cornerRadius,
@@ -777,25 +501,22 @@ fun BubblePreviewScreen() {
 
     var isCentralBubbleVisible by remember { mutableStateOf(true) }
 
-    val commonSettings =
-        remember {
-            BubblesSettings(
-                scrimColor = Color(0x00000000),
-                dismissOnScrimClick = true,
-                enterAnimationDurationMs = 0,
-                exitAnimationDurationMs = 0
-            )
-        }
+    val commonSettings = remember {
+        BubblesSettings(
+            scrimColor = Color(0x00000000),
+            dismissOnScrimClick = true,
+            enterAnimationDurationMs = 0,
+            exitAnimationDurationMs = 0
+        )
+    }
 
     Box(
-        modifier =
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
     ) {
         Box(
-            modifier =
-            Modifier
+            modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(16.dp)
                 .size(100.dp)
@@ -809,14 +530,12 @@ fun BubblePreviewScreen() {
         }
 
         Bubble(
-            settings =
-            commonSettings.copy(
+            settings = commonSettings.copy(
                 backgroundColor = Color(0xFF29B6F6).copy(alpha = 0.8f),
                 bubbleBorderColor = Color.Black,
-                bubbleBorderWidth = 1.dp
+                bubbleBorderWidth = 1.dp,
             ),
-            bubbleData =
-            BubbleData(
+            bubbleData = BubbleData(
                 id = "TopStart",
                 arrowPosition = ArrowPosition.BOTTOM,
                 content = { onDismissClick, onStopShowRequest ->
@@ -837,8 +556,7 @@ fun BubblePreviewScreen() {
         )
 
         Box(
-            modifier =
-            Modifier
+            modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(16.dp)
                 .size(100.dp)
@@ -852,14 +570,12 @@ fun BubblePreviewScreen() {
         }
 
         Bubble(
-            settings =
-            commonSettings.copy(
+            settings = commonSettings.copy(
                 backgroundColor = Color(0xFFFFB74D).copy(alpha = 0.8f),
                 bubbleBorderColor = Color.Black,
-                bubbleBorderWidth = 1.dp
+                bubbleBorderWidth = 1.dp,
             ),
-            bubbleData =
-            BubbleData(
+            bubbleData = BubbleData(
                 id = "TopEnd",
                 arrowPosition = ArrowPosition.LEFT,
                 content = { onDismissClick, onStopShowRequest ->
@@ -879,8 +595,7 @@ fun BubblePreviewScreen() {
         )
 
         Box(
-            modifier =
-            Modifier
+            modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(16.dp)
                 .size(100.dp)
@@ -894,14 +609,12 @@ fun BubblePreviewScreen() {
         }
 
         Bubble(
-            settings =
-            commonSettings.copy(
+            settings = commonSettings.copy(
                 backgroundColor = Color(0xFFFFA726).copy(alpha = 0.8f),
                 bubbleBorderColor = Color.Black,
                 bubbleBorderWidth = 1.dp
             ),
-            bubbleData =
-            BubbleData(
+            bubbleData = BubbleData(
                 id = "bubble3",
                 arrowPosition = ArrowPosition.RIGHT,
                 content = { onDismissClick, onStopShowRequest ->
@@ -921,8 +634,7 @@ fun BubblePreviewScreen() {
         )
 
         Box(
-            modifier =
-            Modifier
+            modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
                 .size(100.dp)
@@ -936,14 +648,12 @@ fun BubblePreviewScreen() {
         }
 
         Bubble(
-            settings =
-            commonSettings.copy(
+            settings = commonSettings.copy(
                 backgroundColor = Color(0xFF00ACC1).copy(alpha = 0.8f),
                 bubbleBorderColor = Color.Black,
-                bubbleBorderWidth = 1.dp
+                bubbleBorderWidth = 1.dp,
             ),
-            bubbleData =
-            BubbleData(
+            bubbleData = BubbleData(
                 id = "bubble4",
                 arrowPosition = ArrowPosition.TOP,
                 content = { onDismissClick, onStopShowRequest ->
@@ -963,8 +673,7 @@ fun BubblePreviewScreen() {
         )
 
         Box(
-            modifier =
-            Modifier
+            modifier = Modifier
                 .align(Alignment.Center)
                 .size(100.dp)
                 .background(Color(0xFF0277BD))
@@ -977,14 +686,13 @@ fun BubblePreviewScreen() {
         }
 
         Bubble(
-            settings =
-            commonSettings.copy(
+            settings = commonSettings.copy(
                 backgroundColor = Color(0xFF0277BD).copy(alpha = 0.8f),
                 bubbleBorderColor = Color(0xFF025C91),
-                bubbleBorderWidth = 2.dp
+                bubbleBorderWidth = 8.dp,
+                arrowTargetOffset = 5.dp,
             ),
-            bubbleData =
-            BubbleData(
+            bubbleData = BubbleData(
                 id = "bubbleCenter",
                 arrowPosition = ArrowPosition.BOTTOM,
                 content = { onDismissClick, onStopShowRequest ->
